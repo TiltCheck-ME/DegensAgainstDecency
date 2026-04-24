@@ -10,6 +10,7 @@ const { v4: uuidv4 } = require('uuid');
 const DegensAgainstDecencyGame = require('./games/DegensAgainstDecencyGame');
 const TwoTruthsAndALieGame = require('./games/TwoTruthsAndALieGame');
 const PokerGame = require('./games/PokerGame');
+const TriviaGame = require('./games/TriviaGame');
 
 class GameManager {
   constructor(io) {
@@ -19,7 +20,8 @@ class GameManager {
     this.gameTypes = {
       'degens-against-decency': DegensAgainstDecencyGame,
       '2-truths-and-a-lie': TwoTruthsAndALieGame,
-      'poker': PokerGame
+      'poker': PokerGame,
+      'trivia': TriviaGame
     };
   }
 
@@ -31,7 +33,7 @@ class GameManager {
     this.integrationManager = integrationManager;
   }
 
-  createGame(gameType, creator, isPrivate = false, maxPlayers = 7) {
+  createGame(gameType, creator, isPrivate = false, maxPlayers = 7, options = {}) {
     if (!this.gameTypes[gameType]) {
       throw new Error('Invalid game type');
     }
@@ -41,7 +43,7 @@ class GameManager {
 
     const gameId = uuidv4();
     const GameClass = this.gameTypes[gameType];
-    const game = new GameClass(gameId, creator, isPrivate, maxPlayers);
+    const game = new GameClass(gameId, creator, isPrivate, maxPlayers, options);
     
     this.games.set(gameId, game);
     

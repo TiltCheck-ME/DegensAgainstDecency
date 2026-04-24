@@ -38,6 +38,7 @@ const gameManager = new GameManager(io);
 const aiCardGenerator = new AICardGenerator();
 const discordBot = new DiscordBot(gameManager, io);
 const integrationManager = new IntegrationManager();
+const triviaActivitySessions = new Map(); // channelId -> gameId
 
 // Connect bots to game manager
 gameManager.setDiscordBot(discordBot);
@@ -469,19 +470,30 @@ app.post('/api/games', (req, res) => {
       };
     }
     
-    const { gameType, isPrivate, maxPlayers } = req.body;
+    const { gameType, isPrivate, maxPlayers, options } = req.body;
     
     // Validate required fields
     if (!gameType) {
       return res.status(400).json({ error: 'Game type is required', message: 'Please select a game type' });
     }
     
-    const game = gameManager.createGame(gameType, user, isPrivate, maxPlayers);
+    const game = gameManager.createGame(gameType, user, isPrivate, maxPlayers, options || {});
     res.json(game);
   } catch (error) {
     console.error('Error creating game:', error);
     res.status(400).json({ error: 'Failed to create game', message: error.message });
   }
+});
+
+app.get('/api/trivia/config', (req, res) => {
+  res.json({
+    discordClientId: process.env.DISCORD_CLIENT_ID || null,
+    activityUrl: process.env.DISCORD_ACTIVITY_URL || null,
+    defaults: {
+      timePerQuestion: parseInt(process.env.TRIVIA_TIME_PER_QUESTION || '10', 10),
+      maxRounds: parseInt(process.env.TRIVIA_MAX_ROUNDS || '10', 10)
+    }
+  });
 });
 
 // Integration API endpoints
@@ -617,6 +629,12 @@ app.get('/arena', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'arena.html'));
 });
 
+app.get('/trivia-activity', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'trivia-activity', 'index.html'));
+});
+
+app.use('/trivia-activity', express.static(path.join(__dirname, 'public', 'trivia-activity')));
+
 app.get('/game/:gameId', (req, res) => {
   const game = gameManager.getGame(req.params.gameId);
   const isInvite = req.query.invite === 'true';
@@ -631,6 +649,29 @@ app.get('/game/:gameId', (req, res) => {
   // Allow access to the game page (game existence is checked client-side)
   res.sendFile(path.join(__dirname, 'public', 'game.html'));
 });
+
+function removeTriviaSessionByGameId(gameId) {
+  for (const [channelId, mappedGameId] of triviaActivitySessions.entries()) {
+    if (mappedGameId === gameId) {
+      triviaActivitySessions.delete(channelId);
+    }
+  }
+}
+
+function attachTriviaEventBridge(game) {
+  if (!game || game.type !== 'trivia' || game.__triviaBridgeAttached) return;
+
+  game.setEventHandler((eventName, payload) => {
+    io.to(game.id).emit(eventName, payload);
+    io.to(game.id).emit('game-update', game.getGameState());
+
+    if (eventName === 'trivia:game-over') {
+      removeTriviaSessionByGameId(game.id);
+    }
+  });
+
+  game.__triviaBridgeAttached = true;
+}
 
 // WebSocket connection handling
 io.on('connection', (socket) => {
@@ -654,12 +695,112 @@ io.on('connection', (socket) => {
       socket.join(gameId);
       socket.gameId = gameId;
       socket.isSpectator = false;
+      const joinedGame = gameManager.getGame(gameId);
+      attachTriviaEventBridge(joinedGame);
       io.to(gameId).emit('game-update', result.game);
       // Update lobby when player joins
       io.to('lobby').emit('lobby-games', gameManager.getPublicGames());
     } else {
       socket.emit('error', result.error);
     }
+  });
+
+  socket.on('trivia:join', (payload = {}) => {
+    const fallbackUserId = `guest-${socket.id}`;
+    const incomingUser = payload.user || {};
+    const userId = incomingUser.id || socket.userId || fallbackUserId;
+    const username = incomingUser.username || `Player_${userId.slice(-4)}`;
+    const channelId = payload.channelId || 'local-activity';
+
+    socket.userId = userId;
+
+    let gameId = triviaActivitySessions.get(channelId);
+    let game = gameId ? gameManager.getGame(gameId) : null;
+
+    if (!game || game.status === 'finished') {
+      const createdGame = gameManager.createGame(
+        'trivia',
+        { id: userId, username },
+        false,
+        20,
+        payload.settings || {}
+      );
+      gameId = createdGame.id;
+      triviaActivitySessions.set(channelId, gameId);
+      game = gameManager.getGame(gameId);
+    } else if (!game.players.some((player) => player.id === userId) && game.status === 'waiting') {
+      gameManager.joinGame(gameId, { id: userId, username }, socket);
+    }
+
+    attachTriviaEventBridge(game);
+
+    socket.join(gameId);
+    socket.gameId = gameId;
+    socket.isSpectator = false;
+
+    const gameState = game.getGameState();
+    io.to(gameId).emit('trivia:lobby', {
+      gameId,
+      status: gameState.status,
+      phase: gameState.phase,
+      players: gameState.players,
+      creatorId: game.creator.id
+    });
+
+    socket.emit('trivia:joined', {
+      gameId,
+      isHost: game.creator.id === userId,
+      game: gameState
+    });
+  });
+
+  socket.on('trivia:start', (payload = {}) => {
+    const gameId = payload.gameId || socket.gameId;
+    const game = gameManager.getGame(gameId);
+
+    if (!game || game.type !== 'trivia') {
+      socket.emit('error', 'Trivia game not found');
+      return;
+    }
+
+    attachTriviaEventBridge(game);
+
+    const result = game.handleAction(socket.userId, {
+      type: 'start-game',
+      settings: payload.settings || {}
+    });
+
+    if (!result.success) {
+      socket.emit('error', result.error);
+      return;
+    }
+
+    io.to(gameId).emit('game-update', game.getGameState());
+  });
+
+  socket.on('trivia:answer', (payload = {}) => {
+    const gameId = payload.gameId || socket.gameId;
+    const game = gameManager.getGame(gameId);
+
+    if (!game || game.type !== 'trivia') {
+      socket.emit('error', 'Trivia game not found');
+      return;
+    }
+
+    const result = game.handleAction(socket.userId, {
+      type: 'submit-answer',
+      answer: payload.answer
+    });
+
+    if (!result.success) {
+      socket.emit('error', result.error);
+      return;
+    }
+
+    socket.emit('trivia:answer-received', {
+      gameId,
+      round: game.currentRound
+    });
   });
 
   socket.on('spectate-game', (gameId) => {
@@ -688,6 +829,17 @@ io.on('connection', (socket) => {
       const game = gameManager.getGame(socket.gameId);
       if (game) {
         io.to(socket.gameId).emit('game-update', game.getGameState());
+        if (game.type === 'trivia') {
+          io.to(socket.gameId).emit('trivia:lobby', {
+            gameId: socket.gameId,
+            status: game.status,
+            phase: game.phase,
+            players: game.players.map((p) => ({ id: p.id, username: p.username })),
+            creatorId: game.creator.id
+          });
+        }
+      } else {
+        removeTriviaSessionByGameId(socket.gameId);
       }
       // Update lobby when player/spectator leaves
       io.to('lobby').emit('lobby-games', gameManager.getPublicGames());
@@ -733,6 +885,17 @@ io.on('connection', (socket) => {
       const game = gameManager.getGame(socket.gameId);
       if (game) {
         io.to(socket.gameId).emit('game-update', game.getGameState());
+        if (game.type === 'trivia') {
+          io.to(socket.gameId).emit('trivia:lobby', {
+            gameId: socket.gameId,
+            status: game.status,
+            phase: game.phase,
+            players: game.players.map((p) => ({ id: p.id, username: p.username })),
+            creatorId: game.creator.id
+          });
+        }
+      } else {
+        removeTriviaSessionByGameId(socket.gameId);
       }
       // Update lobby when player/spectator disconnects
       io.to('lobby').emit('lobby-games', gameManager.getPublicGames());

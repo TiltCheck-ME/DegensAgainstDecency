@@ -6,7 +6,7 @@
  * See LICENSE file in the project root for full license information.
  */
 
-const { Client, GatewayIntentBits, Collection, SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { Client, GatewayIntentBits, Collection, SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 
 class DiscordBot {
   constructor(gameManager, io) {
@@ -95,6 +95,35 @@ class DiscordBot {
       .setName('game-status')
       .setDescription('Check your current game status');
 
+    // Trivia Activity Command
+    const triviaCommand = new SlashCommandBuilder()
+      .setName('trivia')
+      .setDescription('Launch live trivia Discord Activity')
+      .addIntegerOption(option =>
+        option.setName('rounds')
+          .setDescription('Number of rounds (5-20)')
+          .setMinValue(5)
+          .setMaxValue(20)
+      )
+      .addIntegerOption(option =>
+        option.setName('time-per-question')
+          .setDescription('Seconds per question (5-30)')
+          .setMinValue(5)
+          .setMaxValue(30)
+      )
+      .addStringOption(option =>
+        option.setName('category')
+          .setDescription('Trivia category')
+          .addChoices(
+            { name: 'General', value: 'general' },
+            { name: 'Sports', value: 'sports' },
+            { name: 'Tech', value: 'tech' },
+            { name: 'Pop Culture', value: 'pop-culture' },
+            { name: 'Degen', value: 'degen' },
+            { name: 'All', value: 'all' }
+          )
+      );
+
     this.commands.set('create-game', {
       data: createGameCommand,
       execute: this.handleCreateGame.bind(this)
@@ -118,6 +147,11 @@ class DiscordBot {
     this.commands.set('game-status', {
       data: gameStatusCommand,
       execute: this.handleGameStatus.bind(this)
+    });
+
+    this.commands.set('trivia', {
+      data: triviaCommand,
+      execute: this.handleTriviaCommand.bind(this)
     });
   }
 
@@ -190,6 +224,39 @@ class DiscordBot {
   }
 
   // Command Handlers
+  async handleTriviaCommand(interaction) {
+    const rounds = interaction.options.getInteger('rounds') || parseInt(process.env.TRIVIA_MAX_ROUNDS || '10', 10);
+    const timePerQuestion = interaction.options.getInteger('time-per-question') || parseInt(process.env.TRIVIA_TIME_PER_QUESTION || '10', 10);
+    const category = interaction.options.getString('category') || 'general';
+
+    const baseActivityUrl = process.env.DISCORD_ACTIVITY_URL || 'http://localhost:3000/trivia-activity';
+    const activityUrl = `${baseActivityUrl}?guildId=${encodeURIComponent(interaction.guildId || '')}&channelId=${encodeURIComponent(interaction.channelId || '')}&rounds=${rounds}&timePerQuestion=${timePerQuestion}&category=${encodeURIComponent(category)}`;
+
+    const embed = new EmbedBuilder()
+      .setColor(0xF1C40F)
+      .setTitle('🧠 Live Trivia Activity')
+      .setDescription('HQ-style elimination trivia is ready to launch in this channel.')
+      .addFields(
+        { name: 'Rounds', value: `${rounds}`, inline: true },
+        { name: 'Time / Question', value: `${timePerQuestion}s`, inline: true },
+        { name: 'Category', value: category, inline: true }
+      )
+      .setFooter({ text: 'Host opens activity, everyone joins in voice and answers live.' })
+      .setTimestamp();
+
+    const row = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setLabel('Launch Trivia Activity')
+        .setStyle(ButtonStyle.Link)
+        .setURL(activityUrl)
+    );
+
+    await interaction.reply({
+      embeds: [embed],
+      components: [row]
+    });
+  }
+
   async handleCreateGame(interaction) {
     const gameType = interaction.options.getString('type');
     const maxPlayers = interaction.options.getInteger('max-players') || 7;
@@ -1574,6 +1641,16 @@ class DiscordBot {
   async notifyGameEnd(gameId, game, winner) {
     if (!this.isReady) return;
 
+    const standings = game.type === 'trivia'
+      ? game.players
+          .map((player) => ({
+            username: player.username,
+            score: game.scores.get(player.id) || 0
+          }))
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 5)
+      : [];
+
     const embed = new EmbedBuilder()
       .setColor(0xFF6B6B)
       .setTitle('🏆 Game Finished!')
@@ -1583,6 +1660,14 @@ class DiscordBot {
         { name: 'Winner', value: winner ? winner.username : 'No winner', inline: true }
       )
       .setTimestamp();
+
+    if (standings.length > 0) {
+      embed.addFields({
+        name: 'Final Standings',
+        value: standings.map((entry, idx) => `${idx + 1}. ${entry.username} — ${entry.score}`).join('\n'),
+        inline: false
+      });
+    }
 
     // Send notification to Discord users in the game
     for (const player of game.players) {
@@ -1602,7 +1687,8 @@ class DiscordBot {
     const types = {
       'degens-against-decency': 'Degens Against Decency',
       '2-truths-and-a-lie': '2 Truths and a Lie',
-      'poker': 'Poker'
+      'poker': 'Poker',
+      'trivia': 'Live Trivia'
     };
     return types[type] || type;
   }

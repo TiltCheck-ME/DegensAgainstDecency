@@ -1,0 +1,1402 @@
+[
+  {
+    "category": "general",
+    "difficulty": "easy",
+    "question": "What is the capital of France?",
+    "options": [
+      "Berlin",
+      "Madrid",
+      "Paris",
+      "Rome"
+    ],
+    "answer": "Paris",
+    "explanation": "Paris is the capital and largest city of France.",
+    "id": "trivia-001"
+  },
+  {
+    "category": "general",
+    "difficulty": "easy",
+    "question": "How many days are in a leap year?",
+    "options": [
+      "365",
+      "366",
+      "364",
+      "367"
+    ],
+    "answer": "366",
+    "explanation": "Leap years include February 29, giving 366 days.",
+    "id": "trivia-002"
+  },
+  {
+    "category": "general",
+    "difficulty": "easy",
+    "question": "Which planet is known as the Red Planet?",
+    "options": [
+      "Venus",
+      "Mars",
+      "Jupiter",
+      "Mercury"
+    ],
+    "answer": "Mars",
+    "explanation": "Mars appears red due to iron oxide on its surface.",
+    "id": "trivia-003"
+  },
+  {
+    "category": "general",
+    "difficulty": "easy",
+    "question": "What is H2O commonly known as?",
+    "options": [
+      "Hydrogen",
+      "Oxygen",
+      "Salt",
+      "Water"
+    ],
+    "answer": "Water",
+    "explanation": "H2O is the chemical formula for water.",
+    "id": "trivia-004"
+  },
+  {
+    "category": "general",
+    "difficulty": "easy",
+    "question": "Which ocean is the largest?",
+    "options": [
+      "Atlantic",
+      "Arctic",
+      "Pacific",
+      "Indian"
+    ],
+    "answer": "Pacific",
+    "explanation": "The Pacific Ocean is the largest ocean on Earth.",
+    "id": "trivia-005"
+  },
+  {
+    "category": "general",
+    "difficulty": "medium",
+    "question": "Who wrote 'Romeo and Juliet'?",
+    "options": [
+      "Charles Dickens",
+      "William Shakespeare",
+      "Jane Austen",
+      "Mark Twain"
+    ],
+    "answer": "William Shakespeare",
+    "explanation": "Shakespeare authored the tragedy Romeo and Juliet.",
+    "id": "trivia-006"
+  },
+  {
+    "category": "general",
+    "difficulty": "medium",
+    "question": "Which country gifted the Statue of Liberty to the United States?",
+    "options": [
+      "France",
+      "Spain",
+      "Italy",
+      "Germany"
+    ],
+    "answer": "France",
+    "explanation": "France gifted the statue in 1886.",
+    "id": "trivia-007"
+  },
+  {
+    "category": "general",
+    "difficulty": "medium",
+    "question": "What gas do plants primarily absorb from the atmosphere?",
+    "options": [
+      "Nitrogen",
+      "Carbon Dioxide",
+      "Helium",
+      "Hydrogen"
+    ],
+    "answer": "Carbon Dioxide",
+    "explanation": "Plants absorb CO2 for photosynthesis.",
+    "id": "trivia-008"
+  },
+  {
+    "category": "general",
+    "difficulty": "medium",
+    "question": "Which continent is Egypt located in?",
+    "options": [
+      "Asia",
+      "Europe",
+      "Africa",
+      "South America"
+    ],
+    "answer": "Africa",
+    "explanation": "Most of Egypt lies in northeastern Africa.",
+    "id": "trivia-009"
+  },
+  {
+    "category": "general",
+    "difficulty": "medium",
+    "question": "What is the hardest natural substance on Earth?",
+    "options": [
+      "Gold",
+      "Diamond",
+      "Quartz",
+      "Iron"
+    ],
+    "answer": "Diamond",
+    "explanation": "Diamond ranks highest on the Mohs hardness scale.",
+    "id": "trivia-010"
+  },
+  {
+    "category": "general",
+    "difficulty": "medium",
+    "question": "How many continents are there?",
+    "options": [
+      "5",
+      "6",
+      "7",
+      "8"
+    ],
+    "answer": "7",
+    "explanation": "There are seven continents.",
+    "id": "trivia-011"
+  },
+  {
+    "category": "general",
+    "difficulty": "medium",
+    "question": "What is the square root of 144?",
+    "options": [
+      "10",
+      "11",
+      "12",
+      "13"
+    ],
+    "answer": "12",
+    "explanation": "12 \u00d7 12 = 144.",
+    "id": "trivia-012"
+  },
+  {
+    "category": "general",
+    "difficulty": "hard",
+    "question": "What is the smallest prime number greater than 100?",
+    "options": [
+      "101",
+      "103",
+      "107",
+      "109"
+    ],
+    "answer": "101",
+    "explanation": "101 is prime and the first prime after 100.",
+    "id": "trivia-013"
+  },
+  {
+    "category": "general",
+    "difficulty": "hard",
+    "question": "Who painted 'The Persistence of Memory'?",
+    "options": [
+      "Pablo Picasso",
+      "Salvador Dal\u00ed",
+      "Claude Monet",
+      "Edvard Munch"
+    ],
+    "answer": "Salvador Dal\u00ed",
+    "explanation": "Dal\u00ed painted The Persistence of Memory in 1931.",
+    "id": "trivia-014"
+  },
+  {
+    "category": "general",
+    "difficulty": "hard",
+    "question": "Which language has the most native speakers worldwide?",
+    "options": [
+      "English",
+      "Mandarin Chinese",
+      "Spanish",
+      "Hindi"
+    ],
+    "answer": "Mandarin Chinese",
+    "explanation": "Mandarin has the highest native-speaker count.",
+    "id": "trivia-015"
+  },
+  {
+    "category": "general",
+    "difficulty": "hard",
+    "question": "What is the currency of Switzerland?",
+    "options": [
+      "Euro",
+      "Swiss Franc",
+      "Krona",
+      "Pound"
+    ],
+    "answer": "Swiss Franc",
+    "explanation": "Switzerland uses the Swiss franc (CHF).",
+    "id": "trivia-016"
+  },
+  {
+    "category": "general",
+    "difficulty": "hard",
+    "question": "What year did the first human land on the Moon?",
+    "options": [
+      "1965",
+      "1967",
+      "1969",
+      "1971"
+    ],
+    "answer": "1969",
+    "explanation": "Apollo 11 landed on the Moon in 1969.",
+    "id": "trivia-017"
+  },
+  {
+    "category": "general",
+    "difficulty": "hard",
+    "question": "How many bones are in the adult human body?",
+    "options": [
+      "198",
+      "206",
+      "212",
+      "220"
+    ],
+    "answer": "206",
+    "explanation": "The adult human body typically has 206 bones.",
+    "id": "trivia-018"
+  },
+  {
+    "category": "general",
+    "difficulty": "hard",
+    "question": "Which scientist proposed the three laws of motion?",
+    "options": [
+      "Albert Einstein",
+      "Galileo Galilei",
+      "Isaac Newton",
+      "Nikola Tesla"
+    ],
+    "answer": "Isaac Newton",
+    "explanation": "Newton formulated the three laws of motion.",
+    "id": "trivia-019"
+  },
+  {
+    "category": "general",
+    "difficulty": "hard",
+    "question": "What is the largest desert in the world?",
+    "options": [
+      "Sahara",
+      "Gobi",
+      "Arctic",
+      "Kalahari"
+    ],
+    "answer": "Arctic",
+    "explanation": "The Arctic polar desert is the largest by area.",
+    "id": "trivia-020"
+  },
+  {
+    "category": "pop-culture",
+    "difficulty": "easy",
+    "question": "Which movie features the quote, 'May the Force be with you'?",
+    "options": [
+      "Star Trek",
+      "Star Wars",
+      "Avatar",
+      "Dune"
+    ],
+    "answer": "Star Wars",
+    "explanation": "The quote is iconic to Star Wars.",
+    "id": "trivia-021"
+  },
+  {
+    "category": "pop-culture",
+    "difficulty": "easy",
+    "question": "Who is known as the 'King of Pop'?",
+    "options": [
+      "Prince",
+      "Elvis Presley",
+      "Michael Jackson",
+      "Bruno Mars"
+    ],
+    "answer": "Michael Jackson",
+    "explanation": "Michael Jackson is widely called the King of Pop.",
+    "id": "trivia-022"
+  },
+  {
+    "category": "pop-culture",
+    "difficulty": "easy",
+    "question": "In Pok\u00e9mon, what is Pikachu's type?",
+    "options": [
+      "Fire",
+      "Water",
+      "Electric",
+      "Grass"
+    ],
+    "answer": "Electric",
+    "explanation": "Pikachu is an Electric-type Pok\u00e9mon.",
+    "id": "trivia-023"
+  },
+  {
+    "category": "pop-culture",
+    "difficulty": "easy",
+    "question": "Which streaming platform produced 'Stranger Things'?",
+    "options": [
+      "Hulu",
+      "Netflix",
+      "Prime Video",
+      "Max"
+    ],
+    "answer": "Netflix",
+    "explanation": "Stranger Things is a Netflix original series.",
+    "id": "trivia-024"
+  },
+  {
+    "category": "pop-culture",
+    "difficulty": "easy",
+    "question": "What is the name of Batman's butler?",
+    "options": [
+      "Alfred",
+      "Jarvis",
+      "Gordon",
+      "Lucius"
+    ],
+    "answer": "Alfred",
+    "explanation": "Alfred Pennyworth is Batman's butler.",
+    "id": "trivia-025"
+  },
+  {
+    "category": "pop-culture",
+    "difficulty": "medium",
+    "question": "Which actor played Iron Man in the MCU?",
+    "options": [
+      "Chris Evans",
+      "Chris Hemsworth",
+      "Robert Downey Jr.",
+      "Mark Ruffalo"
+    ],
+    "answer": "Robert Downey Jr.",
+    "explanation": "Robert Downey Jr. portrayed Tony Stark/Iron Man.",
+    "id": "trivia-026"
+  },
+  {
+    "category": "pop-culture",
+    "difficulty": "medium",
+    "question": "In Friends, what is the name of Ross's second wife?",
+    "options": [
+      "Carol",
+      "Emily",
+      "Rachel",
+      "Janice"
+    ],
+    "answer": "Emily",
+    "explanation": "Ross's second wife was Emily Waltham.",
+    "id": "trivia-027"
+  },
+  {
+    "category": "pop-culture",
+    "difficulty": "medium",
+    "question": "Which singer released the album '1989'?",
+    "options": [
+      "Ariana Grande",
+      "Dua Lipa",
+      "Taylor Swift",
+      "Rihanna"
+    ],
+    "answer": "Taylor Swift",
+    "explanation": "1989 is one of Taylor Swift's biggest albums.",
+    "id": "trivia-028"
+  },
+  {
+    "category": "pop-culture",
+    "difficulty": "medium",
+    "question": "What is the highest-grossing film of all time (unadjusted) as of 2026?",
+    "options": [
+      "Titanic",
+      "Avatar",
+      "Avengers: Endgame",
+      "Star Wars: The Force Awakens"
+    ],
+    "answer": "Avatar",
+    "explanation": "Avatar regained the top global box-office position.",
+    "id": "trivia-029"
+  },
+  {
+    "category": "pop-culture",
+    "difficulty": "medium",
+    "question": "Which TV show features the character Eleven?",
+    "options": [
+      "Dark",
+      "The Boys",
+      "Stranger Things",
+      "Wednesday"
+    ],
+    "answer": "Stranger Things",
+    "explanation": "Eleven is a central character in Stranger Things.",
+    "id": "trivia-030"
+  },
+  {
+    "category": "pop-culture",
+    "difficulty": "medium",
+    "question": "What does 'K' stand for in K-pop?",
+    "options": [
+      "Korean",
+      "Kinetic",
+      "Kingdom",
+      "Kawaii"
+    ],
+    "answer": "Korean",
+    "explanation": "K-pop means Korean popular music.",
+    "id": "trivia-031"
+  },
+  {
+    "category": "pop-culture",
+    "difficulty": "medium",
+    "question": "Which game franchise includes characters Link and Zelda?",
+    "options": [
+      "Final Fantasy",
+      "The Legend of Zelda",
+      "Elden Ring",
+      "Monster Hunter"
+    ],
+    "answer": "The Legend of Zelda",
+    "explanation": "Link and Zelda belong to The Legend of Zelda series.",
+    "id": "trivia-032"
+  },
+  {
+    "category": "pop-culture",
+    "difficulty": "hard",
+    "question": "Who directed the film 'Inception'?",
+    "options": [
+      "Denis Villeneuve",
+      "Christopher Nolan",
+      "Steven Spielberg",
+      "James Cameron"
+    ],
+    "answer": "Christopher Nolan",
+    "explanation": "Inception was directed by Christopher Nolan.",
+    "id": "trivia-033"
+  },
+  {
+    "category": "pop-culture",
+    "difficulty": "hard",
+    "question": "In Harry Potter, what is Voldemort's real first name?",
+    "options": [
+      "Tom",
+      "Edward",
+      "James",
+      "Albus"
+    ],
+    "answer": "Tom",
+    "explanation": "Voldemort's real name is Tom Riddle.",
+    "id": "trivia-034"
+  },
+  {
+    "category": "pop-culture",
+    "difficulty": "hard",
+    "question": "Which artist painted the 'Campbell's Soup Cans'?",
+    "options": [
+      "Andy Warhol",
+      "Roy Lichtenstein",
+      "Jean-Michel Basquiat",
+      "Keith Haring"
+    ],
+    "answer": "Andy Warhol",
+    "explanation": "Warhol created the famous pop art series.",
+    "id": "trivia-035"
+  },
+  {
+    "category": "pop-culture",
+    "difficulty": "hard",
+    "question": "What is the fictional metal in Black Panther called?",
+    "options": [
+      "Adamantium",
+      "Unobtainium",
+      "Vibranium",
+      "Mithril"
+    ],
+    "answer": "Vibranium",
+    "explanation": "Wakanda is rich in vibranium.",
+    "id": "trivia-036"
+  },
+  {
+    "category": "pop-culture",
+    "difficulty": "hard",
+    "question": "Which band released the album 'Dark Side of the Moon'?",
+    "options": [
+      "The Beatles",
+      "Pink Floyd",
+      "Led Zeppelin",
+      "Queen"
+    ],
+    "answer": "Pink Floyd",
+    "explanation": "Pink Floyd released it in 1973.",
+    "id": "trivia-037"
+  },
+  {
+    "category": "pop-culture",
+    "difficulty": "hard",
+    "question": "Which Pixar movie is set mostly in the Land of the Dead?",
+    "options": [
+      "Soul",
+      "Coco",
+      "Inside Out",
+      "Luca"
+    ],
+    "answer": "Coco",
+    "explanation": "Coco centers around D\u00eda de los Muertos and the Land of the Dead.",
+    "id": "trivia-038"
+  },
+  {
+    "category": "pop-culture",
+    "difficulty": "hard",
+    "question": "What is the name of Thor's hammer?",
+    "options": [
+      "Stormbreaker",
+      "Gungnir",
+      "Mjolnir",
+      "Aegis"
+    ],
+    "answer": "Mjolnir",
+    "explanation": "Thor's original hammer is Mjolnir.",
+    "id": "trivia-039"
+  },
+  {
+    "category": "pop-culture",
+    "difficulty": "hard",
+    "question": "Which HBO series features houses Stark and Lannister?",
+    "options": [
+      "The Witcher",
+      "Game of Thrones",
+      "Vikings",
+      "The Last Kingdom"
+    ],
+    "answer": "Game of Thrones",
+    "explanation": "These houses are central to Game of Thrones.",
+    "id": "trivia-040"
+  },
+  {
+    "category": "sports",
+    "difficulty": "easy",
+    "question": "How many players are on a soccer team on the field at once?",
+    "options": [
+      "9",
+      "10",
+      "11",
+      "12"
+    ],
+    "answer": "11",
+    "explanation": "Each soccer team fields 11 players.",
+    "id": "trivia-041"
+  },
+  {
+    "category": "sports",
+    "difficulty": "easy",
+    "question": "In basketball, how many points is a free throw worth?",
+    "options": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "answer": "1",
+    "explanation": "A made free throw is worth one point.",
+    "id": "trivia-042"
+  },
+  {
+    "category": "sports",
+    "difficulty": "easy",
+    "question": "Which country hosts Wimbledon?",
+    "options": [
+      "France",
+      "United States",
+      "Australia",
+      "United Kingdom"
+    ],
+    "answer": "United Kingdom",
+    "explanation": "Wimbledon is held in London, UK.",
+    "id": "trivia-043"
+  },
+  {
+    "category": "sports",
+    "difficulty": "easy",
+    "question": "How many rings are on the Olympic flag?",
+    "options": [
+      "4",
+      "5",
+      "6",
+      "7"
+    ],
+    "answer": "5",
+    "explanation": "The Olympic flag has five rings.",
+    "id": "trivia-044"
+  },
+  {
+    "category": "sports",
+    "difficulty": "easy",
+    "question": "In baseball, how many strikes make an out?",
+    "options": [
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "answer": "3",
+    "explanation": "Three strikes results in a strikeout.",
+    "id": "trivia-045"
+  },
+  {
+    "category": "sports",
+    "difficulty": "medium",
+    "question": "What is the maximum score with one dart in standard darts?",
+    "options": [
+      "50",
+      "60",
+      "100",
+      "180"
+    ],
+    "answer": "60",
+    "explanation": "Triple 20 is worth 60 and is the maximum single-dart score.",
+    "id": "trivia-046"
+  },
+  {
+    "category": "sports",
+    "difficulty": "medium",
+    "question": "Which sport uses the terms birdie, eagle, and bogey?",
+    "options": [
+      "Tennis",
+      "Golf",
+      "Cricket",
+      "Rugby"
+    ],
+    "answer": "Golf",
+    "explanation": "Those scoring terms are from golf.",
+    "id": "trivia-047"
+  },
+  {
+    "category": "sports",
+    "difficulty": "medium",
+    "question": "How long is an NBA game (regulation)?",
+    "options": [
+      "40 minutes",
+      "48 minutes",
+      "60 minutes",
+      "90 minutes"
+    ],
+    "answer": "48 minutes",
+    "explanation": "NBA games have four 12-minute quarters.",
+    "id": "trivia-048"
+  },
+  {
+    "category": "sports",
+    "difficulty": "medium",
+    "question": "What color card means ejection in soccer?",
+    "options": [
+      "Blue",
+      "Green",
+      "Red",
+      "Black"
+    ],
+    "answer": "Red",
+    "explanation": "A red card sends a player off.",
+    "id": "trivia-049"
+  },
+  {
+    "category": "sports",
+    "difficulty": "medium",
+    "question": "In tennis, what is a score of zero called?",
+    "options": [
+      "Nil",
+      "Love",
+      "Blank",
+      "Void"
+    ],
+    "answer": "Love",
+    "explanation": "Zero is called love in tennis.",
+    "id": "trivia-050"
+  },
+  {
+    "category": "sports",
+    "difficulty": "medium",
+    "question": "Which sport is associated with the Tour de France?",
+    "options": [
+      "Running",
+      "Cycling",
+      "Skiing",
+      "Swimming"
+    ],
+    "answer": "Cycling",
+    "explanation": "The Tour de France is a cycling race.",
+    "id": "trivia-051"
+  },
+  {
+    "category": "sports",
+    "difficulty": "medium",
+    "question": "What is the standard distance of a marathon?",
+    "options": [
+      "40.2 km",
+      "41.2 km",
+      "42.195 km",
+      "43.0 km"
+    ],
+    "answer": "42.195 km",
+    "explanation": "Official marathon distance is 42.195 km.",
+    "id": "trivia-052"
+  },
+  {
+    "category": "sports",
+    "difficulty": "hard",
+    "question": "In American football, how many points is a safety worth?",
+    "options": [
+      "1",
+      "2",
+      "3",
+      "6"
+    ],
+    "answer": "2",
+    "explanation": "A safety scores two points.",
+    "id": "trivia-053"
+  },
+  {
+    "category": "sports",
+    "difficulty": "hard",
+    "question": "Which country won the first FIFA World Cup in 1930?",
+    "options": [
+      "Brazil",
+      "Italy",
+      "Uruguay",
+      "Argentina"
+    ],
+    "answer": "Uruguay",
+    "explanation": "Uruguay won the inaugural World Cup in 1930.",
+    "id": "trivia-054"
+  },
+  {
+    "category": "sports",
+    "difficulty": "hard",
+    "question": "What is the term for three strikes in a row in bowling?",
+    "options": [
+      "Turkey",
+      "Triple",
+      "Hat-trick",
+      "Sweep"
+    ],
+    "answer": "Turkey",
+    "explanation": "Three consecutive strikes are called a turkey.",
+    "id": "trivia-055"
+  },
+  {
+    "category": "sports",
+    "difficulty": "hard",
+    "question": "In cricket, how many runs is a boundary worth when the ball crosses the rope without bouncing?",
+    "options": [
+      "4",
+      "5",
+      "6",
+      "8"
+    ],
+    "answer": "6",
+    "explanation": "A ball clearing the boundary on the full scores six.",
+    "id": "trivia-056"
+  },
+  {
+    "category": "sports",
+    "difficulty": "hard",
+    "question": "Which city hosted the 2016 Summer Olympics?",
+    "options": [
+      "London",
+      "Tokyo",
+      "Rio de Janeiro",
+      "Beijing"
+    ],
+    "answer": "Rio de Janeiro",
+    "explanation": "Rio hosted the 2016 Summer Olympics.",
+    "id": "trivia-057"
+  },
+  {
+    "category": "sports",
+    "difficulty": "hard",
+    "question": "How many holes are played in a standard round of golf?",
+    "options": [
+      "9",
+      "12",
+      "18",
+      "27"
+    ],
+    "answer": "18",
+    "explanation": "A full standard golf round is 18 holes.",
+    "id": "trivia-058"
+  },
+  {
+    "category": "sports",
+    "difficulty": "hard",
+    "question": "Which sport uses a pommel horse?",
+    "options": [
+      "Fencing",
+      "Gymnastics",
+      "Equestrian",
+      "Wrestling"
+    ],
+    "answer": "Gymnastics",
+    "explanation": "Pommel horse is an apparatus in men's artistic gymnastics.",
+    "id": "trivia-059"
+  },
+  {
+    "category": "sports",
+    "difficulty": "hard",
+    "question": "What does VAR stand for in soccer?",
+    "options": [
+      "Video Assistant Referee",
+      "Virtual Arena Review",
+      "Verified Action Replay",
+      "Visual Appeals Room"
+    ],
+    "answer": "Video Assistant Referee",
+    "explanation": "VAR means Video Assistant Referee.",
+    "id": "trivia-060"
+  },
+  {
+    "category": "tech",
+    "difficulty": "easy",
+    "question": "What does CPU stand for?",
+    "options": [
+      "Central Process Unit",
+      "Central Processing Unit",
+      "Computer Personal Unit",
+      "Core Processing Utility"
+    ],
+    "answer": "Central Processing Unit",
+    "explanation": "CPU stands for Central Processing Unit.",
+    "id": "trivia-061"
+  },
+  {
+    "category": "tech",
+    "difficulty": "easy",
+    "question": "Which company develops the Android operating system?",
+    "options": [
+      "Apple",
+      "Microsoft",
+      "Google",
+      "Samsung"
+    ],
+    "answer": "Google",
+    "explanation": "Google develops Android.",
+    "id": "trivia-062"
+  },
+  {
+    "category": "tech",
+    "difficulty": "easy",
+    "question": "What does HTML stand for?",
+    "options": [
+      "HyperText Markup Language",
+      "HighText Machine Language",
+      "Hyper Transfer Markdown Language",
+      "Home Tool Markup Language"
+    ],
+    "answer": "HyperText Markup Language",
+    "explanation": "HTML stands for HyperText Markup Language.",
+    "id": "trivia-063"
+  },
+  {
+    "category": "tech",
+    "difficulty": "easy",
+    "question": "Which protocol is used to securely browse websites?",
+    "options": [
+      "HTTP",
+      "FTP",
+      "HTTPS",
+      "SMTP"
+    ],
+    "answer": "HTTPS",
+    "explanation": "HTTPS is HTTP over TLS for secure browsing.",
+    "id": "trivia-064"
+  },
+  {
+    "category": "tech",
+    "difficulty": "easy",
+    "question": "What is the name of Apple's mobile OS?",
+    "options": [
+      "iOS",
+      "macOS",
+      "watchOS",
+      "tvOS"
+    ],
+    "answer": "iOS",
+    "explanation": "iOS is Apple's mobile operating system.",
+    "id": "trivia-065"
+  },
+  {
+    "category": "tech",
+    "difficulty": "medium",
+    "question": "In Git, which command creates a copy of a remote repository locally?",
+    "options": [
+      "git pull",
+      "git clone",
+      "git fork",
+      "git init"
+    ],
+    "answer": "git clone",
+    "explanation": "git clone copies a remote repo to local.",
+    "id": "trivia-066"
+  },
+  {
+    "category": "tech",
+    "difficulty": "medium",
+    "question": "Which JavaScript runtime is built on Chrome's V8 engine?",
+    "options": [
+      "Deno",
+      "Bun",
+      "Node.js",
+      "Electron"
+    ],
+    "answer": "Node.js",
+    "explanation": "Node.js uses V8 to run JavaScript server-side.",
+    "id": "trivia-067"
+  },
+  {
+    "category": "tech",
+    "difficulty": "medium",
+    "question": "What does SQL stand for?",
+    "options": [
+      "Structured Query Language",
+      "Simple Query Logic",
+      "Standard Queue Language",
+      "System Query Layer"
+    ],
+    "answer": "Structured Query Language",
+    "explanation": "SQL stands for Structured Query Language.",
+    "id": "trivia-068"
+  },
+  {
+    "category": "tech",
+    "difficulty": "medium",
+    "question": "Which company created the TypeScript language?",
+    "options": [
+      "Meta",
+      "Google",
+      "Microsoft",
+      "Oracle"
+    ],
+    "answer": "Microsoft",
+    "explanation": "TypeScript was created and is maintained by Microsoft.",
+    "id": "trivia-069"
+  },
+  {
+    "category": "tech",
+    "difficulty": "medium",
+    "question": "What is 2FA short for?",
+    "options": [
+      "Two-Factor Authentication",
+      "Two-File Access",
+      "Trusted Framework API",
+      "Token Form Authorization"
+    ],
+    "answer": "Two-Factor Authentication",
+    "explanation": "2FA means Two-Factor Authentication.",
+    "id": "trivia-070"
+  },
+  {
+    "category": "tech",
+    "difficulty": "medium",
+    "question": "Which data structure uses FIFO order?",
+    "options": [
+      "Stack",
+      "Queue",
+      "Tree",
+      "Graph"
+    ],
+    "answer": "Queue",
+    "explanation": "Queue operations are First-In, First-Out.",
+    "id": "trivia-071"
+  },
+  {
+    "category": "tech",
+    "difficulty": "medium",
+    "question": "Which port is commonly used for HTTPS?",
+    "options": [
+      "21",
+      "25",
+      "80",
+      "443"
+    ],
+    "answer": "443",
+    "explanation": "HTTPS conventionally uses TCP port 443.",
+    "id": "trivia-072"
+  },
+  {
+    "category": "tech",
+    "difficulty": "hard",
+    "question": "What does DNS stand for?",
+    "options": [
+      "Domain Name System",
+      "Data Network Service",
+      "Dynamic Naming Standard",
+      "Digital Node Setup"
+    ],
+    "answer": "Domain Name System",
+    "explanation": "DNS translates domain names into IP addresses.",
+    "id": "trivia-073"
+  },
+  {
+    "category": "tech",
+    "difficulty": "hard",
+    "question": "In Big O notation, what is binary search complexity on sorted data?",
+    "options": [
+      "O(n)",
+      "O(log n)",
+      "O(n log n)",
+      "O(1)"
+    ],
+    "answer": "O(log n)",
+    "explanation": "Binary search halves the search space each step.",
+    "id": "trivia-074"
+  },
+  {
+    "category": "tech",
+    "difficulty": "hard",
+    "question": "Which language is primarily used for styling web pages?",
+    "options": [
+      "HTML",
+      "JavaScript",
+      "CSS",
+      "SQL"
+    ],
+    "answer": "CSS",
+    "explanation": "CSS controls presentation and styles of web pages.",
+    "id": "trivia-075"
+  },
+  {
+    "category": "tech",
+    "difficulty": "hard",
+    "question": "What does REST stand for in web architecture?",
+    "options": [
+      "Representational State Transfer",
+      "Remote Execution Service Type",
+      "Relational State Tracking",
+      "Resource Endpoint Sync Tech"
+    ],
+    "answer": "Representational State Transfer",
+    "explanation": "REST stands for Representational State Transfer.",
+    "id": "trivia-076"
+  },
+  {
+    "category": "tech",
+    "difficulty": "hard",
+    "question": "Which Linux command changes file permissions?",
+    "options": [
+      "chown",
+      "chmod",
+      "lsmod",
+      "passwd"
+    ],
+    "answer": "chmod",
+    "explanation": "chmod modifies permission bits.",
+    "id": "trivia-077"
+  },
+  {
+    "category": "tech",
+    "difficulty": "hard",
+    "question": "What is the binary value of decimal 10?",
+    "options": [
+      "1001",
+      "1010",
+      "1100",
+      "1110"
+    ],
+    "answer": "1010",
+    "explanation": "Decimal 10 equals binary 1010.",
+    "id": "trivia-078"
+  },
+  {
+    "category": "tech",
+    "difficulty": "hard",
+    "question": "Which HTTP status code means 'Not Found'?",
+    "options": [
+      "200",
+      "301",
+      "403",
+      "404"
+    ],
+    "answer": "404",
+    "explanation": "404 indicates the requested resource was not found.",
+    "id": "trivia-079"
+  },
+  {
+    "category": "tech",
+    "difficulty": "hard",
+    "question": "What does IDE stand for in software development?",
+    "options": [
+      "Integrated Development Environment",
+      "Interactive Design Engine",
+      "Internal Debug Executor",
+      "Internet Data Endpoint"
+    ],
+    "answer": "Integrated Development Environment",
+    "explanation": "IDE stands for Integrated Development Environment.",
+    "id": "trivia-080"
+  },
+  {
+    "category": "degen",
+    "difficulty": "easy",
+    "question": "What is the ticker symbol for Bitcoin?",
+    "options": [
+      "ETH",
+      "BTC",
+      "SOL",
+      "XRP"
+    ],
+    "answer": "BTC",
+    "explanation": "BTC is the standard ticker for Bitcoin.",
+    "id": "trivia-081"
+  },
+  {
+    "category": "degen",
+    "difficulty": "easy",
+    "question": "What does 'HODL' originally come from?",
+    "options": [
+      "An acronym",
+      "A misspelled forum post",
+      "A trading app",
+      "A hardware wallet"
+    ],
+    "answer": "A misspelled forum post",
+    "explanation": "HODL came from a typo in a 2013 Bitcoin forum post.",
+    "id": "trivia-082"
+  },
+  {
+    "category": "degen",
+    "difficulty": "easy",
+    "question": "In poker slang, what does 'all-in' mean?",
+    "options": [
+      "Fold immediately",
+      "Bet every remaining chip",
+      "Call only",
+      "Check"
+    ],
+    "answer": "Bet every remaining chip",
+    "explanation": "All-in means committing your entire stack.",
+    "id": "trivia-083"
+  },
+  {
+    "category": "degen",
+    "difficulty": "easy",
+    "question": "What does 'FOMO' stand for?",
+    "options": [
+      "Fear Of Missing Out",
+      "Fast Order Market Option",
+      "Full Open Market Operation",
+      "Fundamental On-chain Momentum Oscillator"
+    ],
+    "answer": "Fear Of Missing Out",
+    "explanation": "FOMO means Fear Of Missing Out.",
+    "id": "trivia-084"
+  },
+  {
+    "category": "degen",
+    "difficulty": "easy",
+    "question": "What is a 'bagholder' in trading slang?",
+    "options": [
+      "A long-term winner",
+      "Someone holding a losing asset",
+      "A market maker",
+      "A day trader"
+    ],
+    "answer": "Someone holding a losing asset",
+    "explanation": "Bagholder refers to someone stuck with a heavy loss.",
+    "id": "trivia-085"
+  },
+  {
+    "category": "degen",
+    "difficulty": "medium",
+    "question": "What does 'DYOR' mean in crypto communities?",
+    "options": [
+      "Do Your Own Research",
+      "Double Your Original Return",
+      "Dynamic Yield On Risk",
+      "Decentralized Yearly Oracle Rate"
+    ],
+    "answer": "Do Your Own Research",
+    "explanation": "DYOR encourages independent due diligence.",
+    "id": "trivia-086"
+  },
+  {
+    "category": "degen",
+    "difficulty": "medium",
+    "question": "A stop-loss order is mainly used to do what?",
+    "options": [
+      "Lock in entry price",
+      "Limit downside risk",
+      "Increase leverage",
+      "Avoid paying fees"
+    ],
+    "answer": "Limit downside risk",
+    "explanation": "Stop-losses are used to cap potential losses.",
+    "id": "trivia-087"
+  },
+  {
+    "category": "degen",
+    "difficulty": "medium",
+    "question": "In options trading, a call option generally benefits from what move?",
+    "options": [
+      "Price going down",
+      "No price movement",
+      "Price going up",
+      "Higher bond yields"
+    ],
+    "answer": "Price going up",
+    "explanation": "Calls gain value as the underlying price rises.",
+    "id": "trivia-088"
+  },
+  {
+    "category": "degen",
+    "difficulty": "medium",
+    "question": "What does 'rekt' typically mean?",
+    "options": [
+      "Huge profits",
+      "Major losses",
+      "Stable portfolio",
+      "Low volatility"
+    ],
+    "answer": "Major losses",
+    "explanation": "'Rekt' means suffering heavy losses.",
+    "id": "trivia-089"
+  },
+  {
+    "category": "degen",
+    "difficulty": "medium",
+    "question": "What is a common meaning of 'whale' in crypto markets?",
+    "options": [
+      "A scam token",
+      "A very large holder/trader",
+      "A validator node",
+      "An exchange founder"
+    ],
+    "answer": "A very large holder/trader",
+    "explanation": "A whale is a market participant with very large holdings.",
+    "id": "trivia-090"
+  },
+  {
+    "category": "degen",
+    "difficulty": "medium",
+    "question": "In poker, what beats a straight?",
+    "options": [
+      "Two pair",
+      "Three of a kind",
+      "Flush",
+      "High card"
+    ],
+    "answer": "Flush",
+    "explanation": "A flush ranks above a straight in standard poker rules.",
+    "id": "trivia-091"
+  },
+  {
+    "category": "degen",
+    "difficulty": "medium",
+    "question": "What does 'paper hands' imply?",
+    "options": [
+      "Holding through volatility",
+      "Selling too early under pressure",
+      "Using paper wallets",
+      "Trading only stocks"
+    ],
+    "answer": "Selling too early under pressure",
+    "explanation": "Paper hands means weak conviction and early panic selling.",
+    "id": "trivia-092"
+  },
+  {
+    "category": "degen",
+    "difficulty": "hard",
+    "question": "What is impermanent loss most associated with?",
+    "options": [
+      "Staking rewards",
+      "Liquidity pools in AMMs",
+      "Cold storage",
+      "Mining hardware"
+    ],
+    "answer": "Liquidity pools in AMMs",
+    "explanation": "Impermanent loss affects AMM liquidity providers when prices diverge.",
+    "id": "trivia-093"
+  },
+  {
+    "category": "degen",
+    "difficulty": "hard",
+    "question": "What is the primary collateral type for many stablecoins like DAI?",
+    "options": [
+      "Gold bars",
+      "Fiat cash in vaults",
+      "Crypto assets",
+      "Airline miles"
+    ],
+    "answer": "Crypto assets",
+    "explanation": "DAI is predominantly overcollateralized by crypto assets.",
+    "id": "trivia-094"
+  },
+  {
+    "category": "degen",
+    "difficulty": "hard",
+    "question": "In market structure, what is slippage?",
+    "options": [
+      "A tax on profits",
+      "Difference between expected and execution price",
+      "A chart pattern",
+      "An exchange outage"
+    ],
+    "answer": "Difference between expected and execution price",
+    "explanation": "Slippage is execution at a worse/better price than expected.",
+    "id": "trivia-095"
+  },
+  {
+    "category": "degen",
+    "difficulty": "hard",
+    "question": "What does APY stand for?",
+    "options": [
+      "Annual Percentage Yield",
+      "Average Position Yearly",
+      "Asset Price Yardstick",
+      "Automated Profit Yield"
+    ],
+    "answer": "Annual Percentage Yield",
+    "explanation": "APY is Annual Percentage Yield.",
+    "id": "trivia-096"
+  },
+  {
+    "category": "degen",
+    "difficulty": "hard",
+    "question": "What is a liquidation in leveraged trading?",
+    "options": [
+      "Taking profits",
+      "Forced position closure due to insufficient margin",
+      "Moving funds to cash",
+      "Airdrop claiming"
+    ],
+    "answer": "Forced position closure due to insufficient margin",
+    "explanation": "Liquidation happens when margin can\u2019t support the position.",
+    "id": "trivia-097"
+  },
+  {
+    "category": "degen",
+    "difficulty": "hard",
+    "question": "What does 'rug pull' commonly describe?",
+    "options": [
+      "A healthy correction",
+      "Project creators draining liquidity/funds",
+      "A protocol upgrade",
+      "A tax reporting rule"
+    ],
+    "answer": "Project creators draining liquidity/funds",
+    "explanation": "A rug pull is an exit scam where liquidity or funds are removed.",
+    "id": "trivia-098"
+  },
+  {
+    "category": "degen",
+    "difficulty": "hard",
+    "question": "What is 'max pain' in options markets?",
+    "options": [
+      "Highest implied volatility",
+      "Price where option buyers lose most value at expiry",
+      "Largest bid-ask spread",
+      "When IV rank is over 90"
+    ],
+    "answer": "Price where option buyers lose most value at expiry",
+    "explanation": "Max pain is the strike level where aggregate option holder losses are highest.",
+    "id": "trivia-099"
+  },
+  {
+    "category": "degen",
+    "difficulty": "hard",
+    "question": "What is a common risk of using very high leverage?",
+    "options": [
+      "Lower fees",
+      "Faster liquidation from small moves",
+      "Guaranteed hedging",
+      "No need for stop-loss"
+    ],
+    "answer": "Faster liquidation from small moves",
+    "explanation": "High leverage magnifies both gains and losses, increasing liquidation risk.",
+    "id": "trivia-100"
+  }
+]

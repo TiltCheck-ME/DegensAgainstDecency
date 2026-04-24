@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Live Trivia Activity</title>
+  <link rel="stylesheet" href="/trivia-activity/trivia.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <h1>🧠 Live Trivia</h1>
+      <div class="meta">
+        <span id="status-pill">Connecting...</span>
+        <span id="player-pill">0 players</span>
+      </div>
+    </header>
+
+    <main>
+      <section id="screen-lobby" class="screen active">
+        <h2>Lobby</h2>
+        <p>Wait for everyone to join, then start the live elimination round.</p>
+        <div id="lobby-players" class="card-list"></div>
+        <button id="start-btn" class="primary">Start Trivia</button>
+      </section>
+
+      <section id="screen-question" class="screen">
+        <div class="round-meta">
+          <span id="round-label">Round 1</span>
+          <div class="countdown-wrap">
+            <svg viewBox="0 0 100 100" class="ring">
+              <circle cx="50" cy="50" r="42" class="ring-bg"></circle>
+              <circle cx="50" cy="50" r="42" class="ring-progress" id="ring-progress"></circle>
+            </svg>
+            <span id="timer-text">10</span>
+          </div>
+        </div>
+        <h2 id="question-text">Question loading...</h2>
+        <div id="answer-grid" class="answer-grid"></div>
+      </section>
+
+      <section id="screen-reveal" class="screen">
+        <h2>Answer Reveal</h2>
+        <p id="reveal-summary"></p>
+        <div id="reveal-results" class="card-list"></div>
+      </section>
+
+      <section id="screen-leaderboard" class="screen">
+        <h2>Leaderboard</h2>
+        <div id="leaderboard-list" class="card-list"></div>
+      </section>
+
+      <section id="screen-gameover" class="screen">
+        <h2>🏆 Game Over</h2>
+        <p id="winner-text"></p>
+        <div id="final-leaderboard" class="card-list"></div>
+        <div id="confetti" class="confetti"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script type="module" src="/trivia-activity/trivia.js"></script>
+</body>
+</html>

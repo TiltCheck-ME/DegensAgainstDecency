@@ -37,6 +37,7 @@
     "generate-secret": "node -e \"console.log('SESSION_SECRET=' + require('crypto').randomBytes(32).toString('hex'))\""
   },
   "dependencies": {
+    "@discord/embedded-app-sdk": "^1.6.1",
     "@supabase/supabase-js": "^2.86.0",
     "axios": "^1.13.2",
     "discord.js": "^14.22.1",

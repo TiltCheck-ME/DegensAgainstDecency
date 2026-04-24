@@ -137,3 +137,32 @@ Discord Activities remain a viable option for future enhancement but are **not n
 **Last Updated:** November 5, 2024  
 **Decision By:** Development Team  
 **Status:** APPROVED - Current Implementation Sufficient
+
+---
+
+## 2026 Update: Live Trivia Discord Activity (Implemented)
+
+The repository now includes a production-ready **Live Trivia Discord Activity** at:
+
+- `GET /trivia-activity`
+- Static assets under `public/trivia-activity/`
+
+### Implemented capabilities
+
+- HQ-style elimination rounds (`trivia` game type)
+- Server-driven round lifecycle via Socket.IO:
+  - `trivia:start`
+  - `trivia:answer`
+  - `trivia:question`
+  - `trivia:answer-locked`
+  - `trivia:reveal`
+  - `trivia:leaderboard`
+  - `trivia:game-over`
+- 100-question local fallback bank in `src/trivia-questions.json`
+- `/trivia` Discord slash command with category/round/time options and activity launch link
+
+### Environment variables
+
+- `DISCORD_ACTIVITY_URL`
+- `TRIVIA_TIME_PER_QUESTION`
+- `TRIVIA_MAX_ROUNDS`
