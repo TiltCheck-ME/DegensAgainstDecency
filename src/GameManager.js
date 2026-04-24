@@ -42,8 +42,23 @@ class GameManager {
     maxPlayers = Math.max(3, Math.min(maxPlayers, 7));
 
     const gameId = uuidv4();
-    const GameClass = this.gameTypes[gameType];
-    const game = new GameClass(gameId, creator, isPrivate, maxPlayers, options);
+    let game;
+    switch (gameType) {
+      case 'degens-against-decency':
+        game = new DegensAgainstDecencyGame(gameId, creator, isPrivate, maxPlayers, options);
+        break;
+      case '2-truths-and-a-lie':
+        game = new TwoTruthsAndALieGame(gameId, creator, isPrivate, maxPlayers, options);
+        break;
+      case 'poker':
+        game = new PokerGame(gameId, creator, isPrivate, maxPlayers, options);
+        break;
+      case 'trivia':
+        game = new TriviaGame(gameId, creator, isPrivate, maxPlayers, options);
+        break;
+      default:
+        throw new Error('Invalid game class configuration');
+    }
     
     this.games.set(gameId, game);
     

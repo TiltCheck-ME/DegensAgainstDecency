@@ -35,7 +35,7 @@ class TriviaActivityClient {
 
   async initDiscord(clientId) {
     const params = new URLSearchParams(window.location.search);
-    const fallbackId = `activity-${Math.random().toString(36).slice(2, 10)}`;
+    const fallbackId = `activity-${this.generateSecureId()}`;
     const fallbackName = `Player_${fallbackId.slice(-4)}`;
 
     this.activitySettings = {
@@ -56,12 +56,15 @@ class TriviaActivityClient {
 
       // Requirement: call authenticate during activity boot.
       try {
-        await discordSdk.commands.authenticate({
-          access_token: 'activity-session',
-          expires: Date.now() + 3600,
-          user: { id: fallbackId, username: fallbackName, discriminator: '0000', avatar: null },
-          scopes: []
-        });
+        const accessToken = params.get('discord_access_token');
+        if (accessToken) {
+          await discordSdk.commands.authenticate({
+            access_token: accessToken,
+            expires: Date.now() + 3600,
+            user: { id: fallbackId, username: fallbackName, discriminator: '0000', avatar: null },
+            scopes: []
+          });
+        }
       } catch (_) {
         // Authentication exchange needs backend token minting in production.
       }
@@ -75,6 +78,15 @@ class TriviaActivityClient {
       console.warn('Discord SDK unavailable, using fallback user.', error);
       this.user = { id: fallbackId, username: fallbackName };
     }
+  }
+
+  generateSecureId() {
+    if (window.crypto?.randomUUID) {
+      return window.crypto.randomUUID();
+    }
+    const bytes = new Uint8Array(16);
+    window.crypto.getRandomValues(bytes);
+    return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
   }
 
   setupSocket() {

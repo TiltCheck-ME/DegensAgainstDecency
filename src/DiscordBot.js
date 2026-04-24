@@ -229,8 +229,21 @@ class DiscordBot {
     const timePerQuestion = interaction.options.getInteger('time-per-question') || parseInt(process.env.TRIVIA_TIME_PER_QUESTION || '10', 10);
     const category = interaction.options.getString('category') || 'general';
 
-    const baseActivityUrl = process.env.DISCORD_ACTIVITY_URL || 'http://localhost:3000/trivia-activity';
-    const activityUrl = `${baseActivityUrl}?guildId=${encodeURIComponent(interaction.guildId || '')}&channelId=${encodeURIComponent(interaction.channelId || '')}&rounds=${rounds}&timePerQuestion=${timePerQuestion}&category=${encodeURIComponent(category)}`;
+    const baseActivityUrl = process.env.DISCORD_ACTIVITY_URL;
+    if (!baseActivityUrl) {
+      await interaction.reply({
+        content: '❌ DISCORD_ACTIVITY_URL is not configured. Set a public HTTPS trivia activity URL first.',
+        ephemeral: true
+      });
+      return;
+    }
+    const activityUrlObject = new URL(baseActivityUrl);
+    activityUrlObject.searchParams.set('guildId', interaction.guildId || '');
+    activityUrlObject.searchParams.set('channelId', interaction.channelId || '');
+    activityUrlObject.searchParams.set('rounds', String(rounds));
+    activityUrlObject.searchParams.set('timePerQuestion', String(timePerQuestion));
+    activityUrlObject.searchParams.set('category', category);
+    const activityUrl = activityUrlObject.toString();
 
     const embed = new EmbedBuilder()
       .setColor(0xF1C40F)

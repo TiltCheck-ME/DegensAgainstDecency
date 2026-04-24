@@ -8,6 +8,7 @@
 
 const BaseGame = require('./BaseGame');
 const questionBank = require('../trivia-questions.json');
+const MS_PER_SECOND = 1000;
 
 class TriviaGame extends BaseGame {
   constructor(id, creator, isPrivate, maxPlayers, options = {}) {
@@ -152,7 +153,7 @@ class TriviaGame extends BaseGame {
 
     this.roundTimer = setTimeout(() => {
       this.lockAnswersAndReveal();
-    }, this.timePerQuestion * 1000);
+    }, this.timePerQuestion * MS_PER_SECOND);
   }
 
   submitAnswer(userId, answer) {
@@ -179,8 +180,7 @@ class TriviaGame extends BaseGame {
     const responseTimeMs = Math.max(0, Date.now() - this.questionStartTs);
     this.roundAnswers.set(userId, {
       answer,
-      responseTimeMs,
-      submittedAt: new Date().toISOString()
+      responseTimeMs
     });
 
     return { success: true };
@@ -214,7 +214,7 @@ class TriviaGame extends BaseGame {
         this.playerStreaks.set(player.id, currentStreak);
 
         const maxBonus = 120;
-        const speedRatio = Math.max(0, 1 - ((submitted.responseTimeMs || 0) / (this.timePerQuestion * 1000)));
+        const speedRatio = Math.max(0, 1 - ((submitted.responseTimeMs || 0) / (this.timePerQuestion * MS_PER_SECOND)));
         const speedBonus = Math.round(speedRatio * maxBonus);
         const streakBonus = Math.min(80, (currentStreak - 1) * 20);
         const points = 100 + speedBonus + streakBonus;

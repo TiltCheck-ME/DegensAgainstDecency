@@ -654,6 +654,7 @@ function removeTriviaSessionByGameId(gameId) {
   for (const [channelId, mappedGameId] of triviaActivitySessions.entries()) {
     if (mappedGameId === gameId) {
       triviaActivitySessions.delete(channelId);
+      break;
     }
   }
 }
@@ -729,7 +730,11 @@ io.on('connection', (socket) => {
       triviaActivitySessions.set(channelId, gameId);
       game = gameManager.getGame(gameId);
     } else if (!game.players.some((player) => player.id === userId) && game.status === 'waiting') {
-      gameManager.joinGame(gameId, { id: userId, username }, socket);
+      const joinResult = gameManager.joinGame(gameId, { id: userId, username }, socket);
+      if (!joinResult.success) {
+        socket.emit('error', joinResult.error || 'Failed to join trivia game');
+        return;
+      }
     }
 
     attachTriviaEventBridge(game);
