@@ -46,7 +46,7 @@
     "passport": "^0.6.0",
     "passport-discord": "^0.1.4",
     "socket.io": "^4.7.2",
-    "uuid": "^9.0.0"
+    "uuid": "^14.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
