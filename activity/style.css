@@ -1,0 +1,1286 @@
+/* CSS Variables for interchangeable color schemes */
+:root {
+    --glow-color: rgba(51, 255, 51, 0.7);
+    --text-color: #33ff33;
+    --text-glow: 0 0 4px rgba(51, 255, 51, 0.5);
+    --bg-color: #051405;
+    --card-bg: #0a240a;
+    --border-color: #33ff33;
+    --crt-brightness: 1.0;
+    --danger-color: #ff2222;
+    --warning-color: #ffff22;
+    --success-color: #33ff33;
+    --info-color: #00ffff;
+}
+
+/* Base Body Styles */
+body {
+    background-color: #1a1a1a;
+    background-image: radial-gradient(circle, #2a2a2a 0%, #151515 100%);
+    color: #e0e0e0;
+    font-family: 'VT323', monospace;
+    font-size: 20px;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+body.discord-activity {
+    height: 100vh;
+    min-height: 100vh;
+    padding: 6px;
+    overflow: hidden;
+    justify-content: center;
+}
+
+body.discord-activity .site-footer {
+    display: none;
+}
+
+body.discord-activity .system-outer {
+    width: 100%;
+    max-width: 100%;
+    padding: 0;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+body.discord-activity .monitor-bezel {
+    width: 100%;
+    max-width: 100%;
+    padding: 12px 12px 8px;
+}
+
+body.discord-activity .crt-screen {
+    height: min(520px, calc(100vh - 140px));
+}
+
+body.discord-activity .simulation-dashboard {
+    min-height: 140px;
+}
+
+/* System Container centering the monitor */
+.system-outer {
+    perspective: 1000px;
+    width: 100%;
+    max-width: 1100px;
+    padding: 20px;
+    box-sizing: border-box;
+    flex-shrink: 0;
+}
+
+/* 90s Desktop Monitor Bezel Shell */
+.monitor-bezel {
+    background: #c3c0b5; /* Classic 90s putty gray */
+    border-radius: 20px;
+    box-shadow: 
+        inset 0 4px 6px rgba(255, 255, 255, 0.8),
+        inset 0 -6px 10px rgba(0, 0, 0, 0.3),
+        0 15px 30px rgba(0,0,0,0.6),
+        0 0 1px 4px rgba(0,0,0,0.1);
+    padding: 30px 30px 15px 30px;
+    border: 4px solid #b2aea2;
+    position: relative;
+}
+
+.bezel-brand {
+    position: absolute;
+    top: 6px;
+    left: 45px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 10px;
+    color: #6a6659;
+    letter-spacing: 2px;
+    text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
+}
+
+/* CRT Screen Window Chassis */
+.crt-screen-container {
+    background: #111;
+    border-radius: 12px;
+    padding: 8px;
+    box-shadow: 
+        inset 0 10px 25px rgba(0,0,0,0.9),
+        inset 0 -10px 25px rgba(0,0,0,0.9),
+        0 4px 10px rgba(255,255,255,0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+/* The actual CRT phosphor display screen */
+.crt-screen {
+    width: 100%;
+    height: 580px;
+    background-color: var(--bg-color);
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 0 0 80px rgba(0, 0, 0, 1);
+    color: var(--text-color);
+    text-shadow: var(--text-glow);
+    filter: brightness(var(--crt-brightness));
+    transition: background 0.3s, color 0.3s, text-shadow 0.3s;
+}
+
+/* Glare & Reflection overlay */
+.crt-glare {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 50% 15%, rgba(255, 255, 255, 0.08) 0%, rgba(0, 0, 0, 0) 70%);
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* Scanlines overlay */
+.crt-scanlines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        rgba(18, 16, 16, 0) 50%, 
+        rgba(0, 0, 0, 0.25) 50%
+    );
+    background-size: 100% 4px;
+    z-index: 11;
+    pointer-events: none;
+}
+
+/* Phosphor flicker animation */
+.crt-flicker {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(18, 16, 16, 0.1);
+    opacity: 0;
+    z-index: 12;
+    pointer-events: none;
+    animation: crt-flicker-anim 0.15s infinite;
+}
+
+@keyframes crt-flicker-anim {
+    0% { opacity: 0.08; }
+    50% { opacity: 0.05; }
+    100% { opacity: 0.12; }
+}
+
+/* Curved glass distortion simulation */
+.crt-screen::before {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    z-index: 13;
+    background-size: 100% 2px, 3px 100%;
+    pointer-events: none;
+}
+
+.crt-screen::after {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+    box-shadow: inset 0 0 60px rgba(0,0,0,0.85);
+    z-index: 14;
+    pointer-events: none;
+}
+
+/* Power On/Off Animation */
+.power-off {
+    animation: turn-off 0.55s cubic-bezier(0.23, 1, 0.32, 1) forwards !important;
+}
+.power-on {
+    animation: turn-on 0.6s ease-out forwards;
+}
+
+@keyframes turn-off {
+    0% { transform: scale(1, 1); filter: brightness(1); opacity: 1; }
+    30% { transform: scale(1, 0.02); filter: brightness(2); }
+    60% { transform: scale(0.005, 0.02); filter: brightness(10); background: #fff; }
+    100% { transform: scale(0, 0); filter: brightness(0); opacity: 0; }
+}
+
+@keyframes turn-on {
+    0% { transform: scale(0, 0); filter: brightness(10); opacity: 0; background: #fff; }
+    30% { transform: scale(1, 0.02); filter: brightness(5); }
+    70% { transform: scale(1, 1); filter: brightness(1.5); }
+    100% { transform: scale(1, 1); filter: brightness(var(--crt-brightness)); opacity: 1; }
+}
+
+/* Themes Definition */
+/* 1. Green Phosphor */
+.theme-green {
+    --glow-color: rgba(51, 255, 51, 0.65);
+    --text-color: #33ff33;
+    --text-glow: 0 0 5px rgba(51, 255, 51, 0.5);
+    --bg-color: #051505;
+    --card-bg: #092609;
+    --border-color: #33ff33;
+    --danger-color: #ff3333;
+    --warning-color: #ffff33;
+    --success-color: #33ff33;
+    --info-color: #00ffff;
+}
+
+/* 2. Amber CRT */
+.theme-amber {
+    --glow-color: rgba(255, 176, 0, 0.65);
+    --text-color: #ffb000;
+    --text-glow: 0 0 5px rgba(255, 176, 0, 0.5);
+    --bg-color: #120b00;
+    --card-bg: #241500;
+    --border-color: #ffb000;
+    --danger-color: #ff4400;
+    --warning-color: #ffdd00;
+    --success-color: #00ff22;
+    --info-color: #ff8800;
+}
+
+/* 3. Cyberpunk Neon */
+.theme-cyber {
+    --glow-color: rgba(0, 240, 255, 0.6);
+    --text-color: #00ffff;
+    --text-glow: 0 0 6px rgba(0, 240, 255, 0.5);
+    --bg-color: #0d0114;
+    --card-bg: #1e032d;
+    --border-color: #ff007f;
+    --danger-color: #ff0055;
+    --warning-color: #ffff00;
+    --success-color: #00ff66;
+    --info-color: #00ffff;
+}
+
+/* 4. VGA Retro Color (Authentic 16-color style) */
+.theme-vga {
+    --glow-color: rgba(255, 255, 255, 0.2);
+    --text-color: #ffffff;
+    --text-glow: none;
+    --bg-color: #0000aa; /* Classic blue background like QBasic/TurboPascal */
+    --card-bg: #000077;
+    --border-color: #55ffff;
+    --danger-color: #ff5555;
+    --warning-color: #ffff55;
+    --success-color: #55ff55;
+    --info-color: #55ffff;
+}
+
+.theme-vga .monitor-bezel {
+    border-color: #777;
+}
+
+/* Screen Views */
+.screen-view {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 5;
+    background-color: transparent;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* BIOS Boot-up Screen */
+#biosScreen {
+    font-family: monospace;
+    font-size: 14px;
+    white-space: pre-wrap;
+    line-height: 1.3;
+    overflow: hidden;
+}
+.bios-text {
+    margin: 0;
+    padding: 0;
+    flex-grow: 1;
+}
+.bios-footer {
+    text-align: center;
+    animation: pulse 1.2s infinite;
+    font-size: 12px;
+    color: var(--text-color);
+}
+
+@keyframes pulse {
+    0% { opacity: 0.3; }
+    50% { opacity: 1; }
+    100% { opacity: 0.3; }
+}
+
+/* Main Menu Design */
+.title-header {
+    text-align: center;
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+
+.title-header h1 {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 42px;
+    margin: 0;
+    color: var(--text-color);
+    letter-spacing: 4px;
+}
+
+.title-header h2.subtitle {
+    font-size: 26px;
+    margin: 10px 0 0 0;
+    letter-spacing: 2px;
+    color: var(--danger-color);
+}
+
+.menu-wagon {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.wagon-ascii {
+    display: inline-block;
+    white-space: pre;
+    font-family: monospace;
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--text-color);
+    line-height: 1.2;
+}
+
+.menu-options {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    margin-top: 10px;
+    flex-grow: 1;
+}
+
+/* Button & input designs */
+.retro-btn {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 14px;
+    color: var(--text-color);
+    background-color: var(--card-bg);
+    border: 2px solid var(--border-color);
+    padding: 10px 20px;
+    cursor: pointer;
+    text-shadow: var(--text-glow);
+    box-shadow: 3px 3px 0 var(--border-color);
+    transition: all 0.05s;
+    outline: none;
+    text-align: left;
+    min-width: 250px;
+}
+
+.retro-btn:hover {
+    background-color: var(--text-color);
+    color: var(--bg-color);
+    text-shadow: none;
+    box-shadow: 1px 1px 0 var(--border-color);
+    transform: translate(2px, 2px);
+}
+
+.retro-btn:active {
+    box-shadow: none;
+    transform: translate(3px, 3px);
+}
+
+.retro-btn.btn-sm {
+    font-size: 10px;
+    padding: 6px 12px;
+    min-width: unset;
+}
+
+.retro-btn.btn-xs {
+    font-size: 8px;
+    padding: 4px 8px;
+    min-width: unset;
+    box-shadow: 2px 2px 0 var(--border-color);
+}
+
+.retro-btn.btn-xs:hover {
+    box-shadow: none;
+    transform: translate(2px, 2px);
+}
+
+.retro-btn.btn-success {
+    border-color: var(--success-color);
+    color: var(--success-color);
+    box-shadow: 3px 3px 0 var(--success-color);
+}
+
+.retro-btn.btn-danger {
+    border-color: var(--danger-color);
+    color: var(--danger-color);
+    box-shadow: 2px 2px 0 var(--danger-color);
+}
+
+.menu-footer {
+    text-align: center;
+    font-size: 15px;
+    color: var(--text-color);
+    opacity: 0.85;
+    margin-top: 10px;
+    border-top: 1px dashed var(--border-color);
+    padding-top: 5px;
+}
+
+.menu-footer p {
+    margin: 3px 0;
+}
+
+/* Roster / Setup Customizer Screen */
+.section-title {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 18px;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.setup-layout {
+    display: flex;
+    gap: 20px;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+.setup-left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    padding: 15px;
+    border-radius: 4px;
+}
+
+.input-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.input-row label {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 12px;
+    width: 80px;
+}
+
+.retro-input {
+    background: var(--bg-color);
+    border: 2px solid var(--border-color);
+    color: var(--text-color);
+    font-family: 'VT323', monospace;
+    font-size: 22px;
+    padding: 4px 8px;
+    outline: none;
+    flex-grow: 1;
+    border-radius: 0;
+}
+
+.retro-select {
+    background: var(--bg-color);
+    border: 2px solid var(--border-color);
+    color: var(--text-color);
+    font-family: 'VT323', monospace;
+    font-size: 20px;
+    padding: 4px 8px;
+    outline: none;
+    flex-grow: 1;
+    border-radius: 0;
+    cursor: pointer;
+}
+
+.setup-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    padding: 15px;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.setup-right h3, .presets-section h3 {
+    margin: 0 0 10px 0;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 10px;
+}
+
+.presets-section {
+    margin-top: 15px;
+    border-top: 1px dashed var(--border-color);
+    padding-top: 12px;
+}
+
+.preset-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.party-list {
+    flex-grow: 1;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    background: var(--bg-color);
+    padding: 5px;
+    margin-bottom: 10px;
+}
+
+.party-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px dotted var(--border-color);
+    padding: 4px 0;
+    font-size: 18px;
+}
+
+.party-item .profession-tag {
+    color: var(--info-color);
+    font-size: 14px;
+}
+
+.btn-remove-char {
+    background: transparent;
+    border: none;
+    color: var(--danger-color);
+    cursor: pointer;
+    font-family: monospace;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.btn-remove-char:hover {
+    color: #fff;
+}
+
+.setup-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+}
+
+/* Simulation Core Layout */
+.hud-bar {
+    display: flex;
+    justify-content: space-between;
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    padding: 5px 12px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 10px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+}
+
+.hud-val {
+    color: var(--info-color);
+}
+
+/* Parallax Scrolling Trail Visualizer */
+.trail-scroller {
+    height: 60px;
+    border: 2px solid var(--border-color);
+    background: #000;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 8px;
+    border-radius: 4px;
+}
+
+.parallax-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200%;
+    height: 100%;
+    background-repeat: repeat-x;
+    background-position: left bottom;
+}
+
+.layer-mountains {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="60" viewBox="0 0 80 60"><path d="M0,60 L20,30 L35,45 L55,20 L80,60 Z" fill="%230c250c"/></svg>');
+    background-size: 160px 100%;
+    opacity: 0.3;
+    animation: parallax-scroll 35s linear infinite;
+    animation-play-state: paused;
+}
+
+.layer-trees {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60"><polygon points="10,60 15,40 12,40 17,25 14,25 20,10 26,25 23,25 28,40 25,40 30,60" fill="%23093c09"/><polygon points="40,60 43,45 41,45 45,30 43,30 48,20 53,30 51,30 55,45 53,45 56,60" fill="%230b4d0b"/></svg>');
+    background-size: 120px 100%;
+    opacity: 0.5;
+    animation: parallax-scroll 18s linear infinite;
+    animation-play-state: paused;
+}
+
+.layer-ground {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="60" viewBox="0 0 40 60"><line x1="0" y1="52" x2="40" y2="52" stroke="%2333ff33" stroke-width="2" stroke-dasharray="2,3"/><line x1="0" y1="59" x2="40" y2="59" stroke="%23004d00" stroke-width="1"/></svg>');
+    background-size: 80px 100%;
+    animation: parallax-scroll 4s linear infinite;
+    animation-play-state: paused;
+}
+
+.scrolling-active .parallax-bg {
+    animation-play-state: running;
+}
+
+@keyframes parallax-scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+/* Wagon sprite animation */
+.pixel-wagon {
+    position: absolute;
+    bottom: 6px;
+    left: 20px;
+    display: flex;
+    align-items: flex-end;
+}
+
+.wagon-sprite {
+    width: 32px;
+    height: 24px;
+    /* CSS Pixel Art Wagon */
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="24" viewBox="0 0 32 24"><rect x="4" y="2" width="22" height="12" fill="%23eeeeee"/><rect x="2" y="10" width="28" height="6" fill="%238b5a2b"/><rect x="6" y="12" width="4" height="4" fill="black"/><circle cx="10" cy="18" r="4" fill="%23cd853f" stroke="black" stroke-width="1"/><circle cx="22" cy="18" r="4" fill="%23cd853f" stroke="black" stroke-width="1"/></svg>') no-repeat;
+    background-size: contain;
+}
+
+.ox-sprite {
+    width: 24px;
+    height: 20px;
+    margin-left: 2px;
+    /* CSS Pixel Art Oxen */
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="20" viewBox="0 0 24 20"><rect x="6" y="4" width="14" height="10" fill="%238b5a2b"/><rect x="16" y="2" width="6" height="6" fill="%238b5a2b"/><rect x="20" y="0" width="2" height="3" fill="white"/><rect x="8" y="14" width="2" height="4" fill="black"/><rect x="18" y="14" width="2" height="4" fill="black"/></svg>') no-repeat;
+    background-size: contain;
+}
+
+.scrolling-active .pixel-wagon {
+    animation: wagon-bounce 0.4s infinite alternate;
+}
+
+@keyframes wagon-bounce {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-2px); }
+}
+
+/* Dashboard Splitting Console and Roster */
+.simulation-dashboard {
+    display: flex;
+    gap: 10px;
+    flex-grow: 1;
+    overflow: hidden;
+    min-height: 240px;
+}
+
+/* Left: System Event Terminal Console */
+.terminal-log-container {
+    flex: 3;
+    display: flex;
+    flex-direction: column;
+    border: 2px solid var(--border-color);
+    background: #000;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.terminal-header {
+    background: var(--card-bg);
+    color: var(--text-color);
+    padding: 3px 8px;
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.cursor-blink {
+    font-weight: bold;
+    animation: pulse 1s infinite;
+}
+
+.terminal-log {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-family: 'VT323', monospace;
+    font-size: 21px;
+    line-height: 1.25;
+}
+
+.log-entry {
+    margin: 0;
+    border-left: 3px solid var(--border-color);
+    padding-left: 8px;
+}
+
+.log-day {
+    color: var(--warning-color);
+    font-weight: bold;
+}
+
+.log-combat {
+    border-color: var(--danger-color);
+}
+
+.log-death {
+    border-color: var(--danger-color);
+    background: rgba(255, 34, 34, 0.15);
+    color: #fff;
+    text-shadow: 0 0 8px var(--danger-color);
+    font-weight: bold;
+}
+
+.log-disease {
+    border-color: var(--warning-color);
+    color: var(--warning-color);
+}
+
+.log-item {
+    border-color: var(--info-color);
+}
+
+.log-victory {
+    border-color: var(--success-color);
+    color: var(--success-color);
+    font-size: 23px;
+    font-weight: bold;
+    text-shadow: 0 0 10px var(--glow-color);
+    animation: pulse 1s infinite alternate;
+}
+
+/* Right: Roster Panel List */
+.roster-panel {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    border: 2px solid var(--border-color);
+    background: var(--card-bg);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.roster-header {
+    background: var(--border-color);
+    color: var(--bg-color);
+    padding: 3px 8px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 10px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.roster-list {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: var(--bg-color);
+}
+
+/* Traveler status cards in panel */
+.traveler-card {
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+    border-radius: 2px;
+}
+
+.traveler-card.selected {
+    border-color: #fff;
+    box-shadow: inset 0 0 8px var(--glow-color);
+}
+
+.traveler-card.dead {
+    opacity: 0.45;
+    border-color: var(--danger-color);
+    background: #000;
+}
+
+.traveler-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.traveler-name {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 9px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dead .traveler-name {
+    text-decoration: line-through;
+    color: var(--danger-color);
+}
+
+.traveler-stats {
+    font-size: 14px;
+    color: var(--info-color);
+}
+
+.health-container {
+    height: 10px;
+    background: #000;
+    border: 1px solid var(--border-color);
+    position: relative;
+    border-radius: 1px;
+}
+
+.health-bar {
+    height: 100%;
+    background: var(--success-color);
+    transition: width 0.25s ease-out;
+}
+
+.health-warning .health-bar {
+    background: var(--warning-color);
+}
+
+.health-danger .health-bar {
+    background: var(--danger-color);
+}
+
+.traveler-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+}
+
+.traveler-inventory {
+    color: var(--info-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-style: italic;
+    max-width: 140px;
+}
+
+.traveler-status-tags {
+    display: flex;
+    gap: 3px;
+}
+
+.tag-disease {
+    background: var(--warning-color);
+    color: #000;
+    padding: 0 4px;
+    font-size: 10px;
+    font-weight: bold;
+    border-radius: 1px;
+}
+
+/* Control and Director Bars */
+.simulation-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 6px;
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    padding: 5px 12px;
+    border-radius: 4px;
+}
+
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.speed-control {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 8px;
+    gap: 6px;
+}
+
+.retro-slider {
+    -webkit-appearance: none;
+    width: 70px;
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    height: 8px;
+    outline: none;
+    cursor: pointer;
+}
+
+.retro-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 10px;
+    height: 14px;
+    background: var(--border-color);
+    border: 1px solid #fff;
+    cursor: pointer;
+}
+
+.speed-label {
+    min-width: 55px;
+    color: var(--info-color);
+}
+
+.director-panel {
+    background: #000;
+    border: 2px solid var(--border-color);
+    border-radius: 4px;
+    margin-top: 6px;
+    padding: 4px 10px;
+}
+
+.director-title {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 8px;
+    color: var(--warning-color);
+    margin-bottom: 4px;
+}
+
+.director-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.btn-dir {
+    flex-grow: 1;
+    border-color: var(--warning-color) !important;
+    color: var(--warning-color) !important;
+    text-shadow: none;
+}
+
+.btn-dir:hover {
+    background-color: var(--warning-color) !important;
+    color: #000 !important;
+}
+
+/* Manual Screen Styles */
+.help-content {
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    padding: 15px;
+    font-size: 20px;
+    line-height: 1.35;
+    overflow-y: auto;
+    flex-grow: 1;
+    border-radius: 4px;
+}
+
+.help-content p {
+    margin: 0 0 10px 0;
+}
+
+.help-content ul {
+    margin: 5px 0 15px 0;
+    padding-left: 20px;
+}
+
+.help-content li {
+    margin-bottom: 6px;
+}
+
+.help-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+.highlight {
+    color: var(--info-color);
+    font-weight: bold;
+}
+
+.section-subtitle {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 11px;
+    color: var(--warning-color);
+    margin-top: 15px !important;
+}
+
+/* Bottom Monitor Physical Control Bezels styling */
+.monitor-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 12px;
+    border-top: 3px solid #b2aea2;
+    margin-top: 12px;
+}
+
+.control-dial-group {
+    display: flex;
+    gap: 15px;
+}
+
+.dial-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.dial-knob {
+    width: 14px;
+    height: 14px;
+    background: #a5a296;
+    border-radius: 50%;
+    border: 2px solid #8e8b7f;
+    position: relative;
+    box-shadow: inset 1px 1px 2px rgba(255,255,255,0.7), 1px 1px 1px rgba(0,0,0,0.2);
+}
+
+.dial-knob::before {
+    content: " ";
+    position: absolute;
+    width: 2px;
+    height: 6px;
+    background: #555;
+    top: 0;
+    left: 4px;
+}
+
+.dial-label {
+    font-family: monospace;
+    font-size: 8px;
+    color: #6a6659;
+    font-weight: bold;
+}
+
+.bezel-theme-toggles {
+    display: flex;
+    gap: 6px;
+    background: #b2aea2;
+    padding: 4px 8px;
+    border-radius: 4px;
+    box-shadow: inset 1px 1px 3px rgba(0,0,0,0.3);
+}
+
+.theme-btn {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid #555;
+    box-shadow: 1px 1px 1px rgba(255,255,255,0.3);
+    outline: none;
+    transition: transform 0.05s;
+}
+
+.theme-btn:active {
+    transform: scale(0.9);
+}
+
+.theme-btn.active {
+    border-color: #fff;
+    transform: scale(1.1);
+    box-shadow: 0 0 4px #000;
+}
+
+.theme-green-btn { background: #33ff33; }
+.theme-amber-btn { background: #ffb000; }
+.theme-cyber-btn { background: #00ffff; }
+.theme-vga-btn { background: #0000aa; }
+
+.power-button-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.power-led {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #440000;
+    box-shadow: inset 0 0 2px rgba(0,0,0,0.8);
+    transition: all 0.2s;
+}
+
+.power-led.LED-on {
+    background: #00ff00;
+    box-shadow: 0 0 8px #00ff00, inset 0 1px 1px rgba(255,255,255,0.5);
+}
+
+.power-btn {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 8px;
+    background: #a5a296;
+    color: #333;
+    border: 2px solid #8e8b7f;
+    border-bottom-width: 4px;
+    padding: 6px 12px;
+    cursor: pointer;
+    outline: none;
+    box-shadow: 0 2px 2px rgba(0,0,0,0.3);
+    font-weight: bold;
+    border-radius: 2px;
+}
+
+.power-btn:active {
+    border-bottom-width: 2px;
+    transform: translateY(2px);
+    box-shadow: none;
+}
+
+/* Custom Webkit scrollbar for retro panels */
+.party-list::-webkit-scrollbar,
+.roster-list::-webkit-scrollbar,
+.terminal-log::-webkit-scrollbar,
+.help-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.party-list::-webkit-scrollbar-track,
+.roster-list::-webkit-scrollbar-track,
+.terminal-log::-webkit-scrollbar-track,
+.help-content::-webkit-scrollbar-track {
+    background: var(--bg-color);
+}
+
+.party-list::-webkit-scrollbar-thumb,
+.roster-list::-webkit-scrollbar-thumb,
+.terminal-log::-webkit-scrollbar-thumb,
+.help-content::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border: 1px solid var(--bg-color);
+}
+
+.site-footer {
+    width: 100%;
+    max-width: 1100px;
+    text-align: center;
+    font-family: 'VT323', monospace;
+    font-size: 12px;
+    color: #666;
+    margin-top: 8px;
+    padding: 4px 8px 12px;
+    flex-shrink: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 4px 10px;
+    box-sizing: border-box;
+}
+
+.site-footer .footer-sep {
+    opacity: 0.5;
+}
+
+.site-footer a {
+    color: #33ff33;
+    text-decoration: none;
+    font-size: 12px;
+}
+
+.site-footer a:hover {
+    text-decoration: underline;
+}
+
+/* DAD card-game spectator panels */
+.black-card-display {
+    border: 2px solid var(--border-color);
+    background: #0a0a0a;
+    border-radius: 4px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    min-height: 72px;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+}
+
+.black-card-display .card-tag {
+    display: block;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 8px;
+    color: var(--muted, var(--info-color));
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+}
+
+.black-card-display p {
+    margin: 0;
+    font-size: 20px;
+    line-height: 1.35;
+    color: var(--text-color);
+}
+
+.card-ticker {
+    height: 36px;
+    border: 2px solid var(--border-color);
+    background: #000;
+    overflow: hidden;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    position: relative;
+}
+
+.card-ticker .ticker-track {
+    white-space: nowrap;
+    font-size: 22px;
+    line-height: 32px;
+    animation: card-ticker-scroll 12s linear infinite;
+    animation-play-state: paused;
+}
+
+.card-ticker.scrolling-active .ticker-track {
+    animation-play-state: running;
+}
+
+@keyframes card-ticker-scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+#lobbyRoster {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+}
+
+#lobbyRoster li {
+    padding: 4px 0;
+    border-bottom: 1px dotted var(--border-color);
+}
+
+.help-content .highlight {
+    color: var(--info-color);
+}
+

@@ -25,10 +25,29 @@ class GameManager {
     // Check if spectator mode
     const urlParams = new URLSearchParams(window.location.search);
     this.isSpectator = urlParams.get('spectate') === 'true';
+    this.isActivity = sessionStorage.getItem('discord_activity_enabled') === 'true';
 
     await this.loadUser();
     this.setupSocket();
     this.setupEventListeners();
+    
+    if (this.isActivity) {
+      this.initDiscordSdk();
+    }
+  }
+
+  async initDiscordSdk() {
+    try {
+      if (window.discord && window.discord.DiscordSDK) {
+        const configResponse = await fetch('/api/config/discord-client-id');
+        const { clientId } = await configResponse.json();
+        this.discordSdk = new window.discord.DiscordSDK(clientId);
+        await this.discordSdk.ready();
+        console.log('🎮 Game: Discord SDK ready');
+      }
+    } catch (error) {
+      console.error('Failed to init Discord SDK in game:', error);
+    }
   }
 
   async loadUser() {
@@ -195,6 +214,32 @@ class GameManager {
     // Update game-specific content based on game type
     this.initializeGameRenderer();
     this.gameRenderer.render(this.gameState);
+
+    if (this.isActivity) {
+      this.updateDiscordPresence();
+    }
+  }
+
+  async updateDiscordPresence() {
+    if (!this.discordSdk || !this.gameState) return;
+    
+    try {
+      await this.discordSdk.ready();
+      await this.discordSdk.commands.setActivity({
+        activity: {
+          type: 0, // PLAYING
+          details: `Playing ${this.formatGameType(this.gameState.type)}`,
+          state: this.formatStatus(this.gameState.status),
+          party: {
+            id: this.gameId,
+            size: [this.gameState.players.length, this.gameState.maxPlayers]
+          }
+        }
+      });
+      console.log('🎮 Game activity updated');
+    } catch (error) {
+      console.log('Could not update presence:', error);
+    }
   }
 
   initializeGameRenderer() {

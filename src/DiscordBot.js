@@ -6,12 +6,23 @@
  * See LICENSE file in the project root for full license information.
  */
 
-const { Client, GatewayIntentBits, Collection, SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const {
+  Client,
+  GatewayIntentBits,
+  Collection,
+  SlashCommandBuilder,
+  EmbedBuilder,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+} = require('discord.js');
+const { serializeGameForSpectator, buildChannelGamesMap } = require('./spectator');
 
 class DiscordBot {
-  constructor(gameManager, io) {
+  constructor(gameManager, io, options = {}) {
     this.gameManager = gameManager;
     this.io = io;
+    this.broadcastToChannel = options.broadcastToChannel || null;
     this.client = null;
     this.commands = new Collection();
     this.discordGames = new Map(); // Store Discord-native games
@@ -177,16 +188,37 @@ class DiscordBot {
   }
 
   async registerSlashCommands() {
+    if (process.env.DISCORD_GUILD_ID) {
+      console.log('DISCORD_GUILD_ID set — use node deploy-commands.js for slash commands');
+      return;
+    }
     try {
       console.log('Started refreshing application (/) commands.');
-      
       const commandsData = Array.from(this.commands.values()).map(cmd => cmd.data.toJSON());
-      
       await this.client.application.commands.set(commandsData);
       console.log('Successfully reloaded application (/) commands.');
     } catch (error) {
       console.error('Error registering slash commands:', error);
     }
+  }
+
+  activityUrl(channelId) {
+    const base = (process.env.ACTIVITY_URL || 'https://symphonious-marzipan-cd1f3d.netlify.app').replace(/\/$/, '');
+    return `${base}/?channelId=${channelId}`;
+  }
+
+  emitSpectator(channelId, type, game, extra = {}) {
+    if (!this.broadcastToChannel || !channelId || !game) return;
+    const feedLine = extra.feedLine || null;
+    this.broadcastToChannel(channelId, {
+      type,
+      gameState: serializeGameForSpectator(game),
+      ...(feedLine ? { feedLine, feedType: extra.feedType || 'passive' } : {}),
+    });
+  }
+
+  getChannelGamesMap() {
+    return buildChannelGamesMap(this.discordGames);
   }
 
   // Command Handlers
@@ -251,7 +283,14 @@ class DiscordBot {
       .setFooter({ text: 'Other players can join with /join-game' })
       .setTimestamp();
 
-    await interaction.reply({ embeds: [embed] });
+    const activityRow = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setLabel('🖥️ Open Retro View')
+        .setStyle(ButtonStyle.Link)
+        .setURL(this.activityUrl(interaction.channelId)),
+    );
+
+    await interaction.reply({ embeds: [embed], components: [activityRow] });
 
     // Send follow-up instructions
     const instructionsEmbed = new EmbedBuilder()
@@ -274,6 +313,7 @@ class DiscordBot {
 
     // Store message ID for reaction handling
     discordGame.joinMessageId = followUp.id;
+    this.emitSpectator(interaction.channelId, 'snapshot', discordGame);
   }
 
   async handleListGames(interaction) {
@@ -407,6 +447,8 @@ class DiscordBot {
       const channel = await this.client.channels.fetch(game.channelId);
       await channel.send({ embeds: [startEmbed] });
     }
+
+    this.emitSpectator(game.channelId, 'lobby_update', game);
   }
 
   async handleStartGame(interaction) {
@@ -465,6 +507,7 @@ class DiscordBot {
       .setTimestamp();
 
     await interaction.reply({ embeds: [embed] });
+    this.emitSpectator(game.channelId, 'game_start', game);
 
     // Start game-specific logic
     switch (game.type) {
@@ -609,6 +652,7 @@ class DiscordBot {
     game.submissionTimeout = setTimeout(() => {
       this.handleDegensTimeout(game);
     }, 120000); // 2 minute timeout
+    this.emitSpectator(game.channelId, 'round_update', game);
   }
 
   async startPokerDiscordGame(game) {
@@ -1029,6 +1073,11 @@ class DiscordBot {
       
       await message.channel.send({ embeds: [resultsEmbed] });
       
+      this.emitSpectator(game.channelId, 'round_update', game, {
+        feedLine: `🏆 ${winner.username} wins the round!`,
+        feedType: 'success',
+      });
+
       // Move to next round
       await this.nextDegensRound(game);
     }
@@ -1055,6 +1104,7 @@ class DiscordBot {
     
     await channel.send({ embeds: [submissionsEmbed] });
     game.waitingFor = 'judging';
+    this.emitSpectator(game.channelId, 'round_update', game);
   }
 
   async handleDegensTimeout(game) {
@@ -1110,6 +1160,7 @@ class DiscordBot {
     game.submissionTimeout = setTimeout(() => {
       this.handleDegensTimeout(game);
     }, 120000);
+    this.emitSpectator(game.channelId, 'round_update', game);
   }
 
   async endDegensGame(game) {
@@ -1138,6 +1189,7 @@ class DiscordBot {
     await channel.send({ embeds: [embed] });
     
     game.status = 'finished';
+    this.emitSpectator(game.channelId, 'game_end', game);
     setTimeout(() => {
       this.discordGames.delete(game.id);
     }, 300000);
@@ -1504,6 +1556,8 @@ class DiscordBot {
     } catch (error) {
       console.error('Failed to update join message:', error);
     }
+
+    this.emitSpectator(targetGame.channelId, 'lobby_update', targetGame);
   }
 
   async handleGameStatus(interaction) {

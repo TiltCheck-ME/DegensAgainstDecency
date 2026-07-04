@@ -1,0 +1,8 @@
+[build]
+  publish = "activity"
+  command = "node scripts/generate-config.js"
+
+[build.environment]
+  NODE_VERSION = "20"
+  WS_URL = "wss://degensagainstdecency.fly.dev"
+  API_URL = "https://degensagainstdecency.fly.dev"

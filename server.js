@@ -15,6 +15,8 @@ const passport = require('passport');
 const DiscordStrategy = require('passport-discord');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
+const axios = require('axios');
+const { createWsHandler } = require('./src/ws-handler');
 
 // Import Supabase client
 const supabase = require('./src/supabase');
@@ -36,8 +38,18 @@ const supabaseEnabled = supabase.initSupabase();
 // Initialize game systems
 const gameManager = new GameManager(io);
 const aiCardGenerator = new AICardGenerator();
-const discordBot = new DiscordBot(gameManager, io);
+
+const channelBroadcast = { fn: () => {} };
+const discordBot = new DiscordBot(gameManager, io, {
+  broadcastToChannel: (channelId, payload) => channelBroadcast.fn(channelId, payload),
+});
 const integrationManager = new IntegrationManager();
+
+const wsHandler = createWsHandler({
+  getActiveGames: () => discordBot.getChannelGamesMap(),
+});
+channelBroadcast.fn = wsHandler.broadcastToChannel;
+wsHandler.attach(server);
 
 // Connect bots to game manager
 gameManager.setDiscordBot(discordBot);
@@ -88,9 +100,110 @@ passport.deserializeUser((user, done) => done(null, user));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.json());
+
+const allowedOrigins = [
+  process.env.ACTIVITY_URL,
+  'https://symphonious-marzipan-cd1f3d.netlify.app',
+  'http://localhost:8888',
+  'http://localhost:3000',
+].filter(Boolean);
+
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin && (allowedOrigins.some((o) => origin === o || origin.startsWith(o.replace(/\/$/, ''))) || process.env.NODE_ENV !== 'production')) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  }
+  if (req.method === 'OPTIONS') return res.sendStatus(204);
+  next();
+});
+
+app.get('/api/health', (req, res) => {
+  res.json({
+    ok: true,
+    service: 'degens-against-decency',
+    discordBot: discordBot.isReady,
+    uptime: process.uptime(),
+  });
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Serve Discord SDK from node_modules
+app.get('/scripts/discord-sdk.js', (req, res) => {
+  res.sendFile(path.join(__dirname, 'node_modules', '@discord', 'embedded-app-sdk', 'dist', 'main.js'));
+});
+
 // Authentication routes - Supabase OAuth takes priority if configured
+// Discord Activity routes
+app.get('/discord-activity', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'discord-activity.html'));
+});
+
+// POST /api/discord-activity/token
+// Exchange Activity authorization code for access token
+app.post('/api/discord-activity/token', async (req, res) => {
+  try {
+    const { code } = req.body;
+    
+    if (!code) {
+      return res.status(400).json({ error: 'Missing authorization code' });
+    }
+
+    const tokenResponse = await axios.post('https://discord.com/api/oauth2/token', new URLSearchParams({
+      client_id: process.env.DISCORD_CLIENT_ID,
+      client_secret: process.env.DISCORD_CLIENT_SECRET,
+      grant_type: 'authorization_code',
+      code: code,
+    }), {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    });
+
+    const accessToken = tokenResponse.data.access_token;
+
+    // Fetch user info from Discord to set up the session
+    const userResponse = await axios.get('https://discord.com/api/users/@me', {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    const discordUser = userResponse.data;
+
+    // Store user in session
+    req.session.user = {
+      id: discordUser.id,
+      username: discordUser.username,
+      discriminator: discordUser.discriminator,
+      avatar: discordUser.avatar,
+      email: discordUser.email,
+      provider: 'discord',
+      providerUserId: discordUser.id
+    };
+
+    res.json({ 
+      access_token: accessToken,
+      user: req.session.user
+    });
+  } catch (error) {
+    console.error('Error exchanging Discord Activity token:', error.response?.data || error.message);
+    res.status(500).json({ 
+      error: 'Failed to exchange token', 
+      details: error.response?.data || error.message 
+    });
+  }
+});
+
+// GET /api/config/discord-client-id
+// Used by Discord Activity to initialize SDK
+app.get('/api/config/discord-client-id', (req, res) => {
+  res.json({ clientId: process.env.DISCORD_CLIENT_ID });
+});
+
 if (supabaseEnabled) {
   // Supabase Discord OAuth routes
   app.get('/auth/discord', async (req, res) => {
@@ -740,7 +853,18 @@ io.on('connection', (socket) => {
   });
 });
 
-server.listen(PORT, () => {
-  console.log(`🎮 Degens Against Decency Arena running on http://localhost:${PORT}`);
-  console.log('🔗 Visit http://localhost:3000 to start playing!');
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`🎮 Degens Against Decency Arena running on port ${PORT}`);
+  console.log(`📡 WebSocket spectators on ws://0.0.0.0:${PORT}`);
+  if (process.env.ACTIVITY_URL) {
+    console.log(`🎯 Activity URL: ${process.env.ACTIVITY_URL}`);
+  }
 });
+
+function shutdown(signal) {
+  console.log(`${signal} received — shutting down`);
+  server.close(() => process.exit(0));
+  setTimeout(() => process.exit(1), 10000);
+}
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));

@@ -2,18 +2,15 @@
 
 This document lists all requirements needed to run Degens Against Decency as a Discord Activity (embedded app within Discord).
 
+# Discord Activity Implementation
+
 ## Current Status
 
-**⚠️ IMPORTANT: Discord Activities are NOT currently implemented for this application.**
+**✅ IMPLEMENTED: Discord Activities are now fully supported.**
 
-As documented in [DISCORD_ACTIVITIES.md](DISCORD_ACTIVITIES.md), the development team has decided to maintain the current text-based Discord bot implementation rather than implementing Discord Activities at this time. This was a strategic decision based on:
+The application now supports the Discord Embedded App SDK (formerly Activity SDK), allowing players to launch and play directly within Discord voice channels as a native Discord Activity.
 
-- Broader accessibility (works in any channel, not just voice channels)
-- Lower development complexity
-- Faster time to market
-- Better support for asynchronous gameplay
-
-**This document outlines what WOULD BE required if Discord Activities were to be implemented in the future.**
+This document serves as the guide for the existing Discord Activity implementation.
 
 ---
 
@@ -71,7 +68,7 @@ Everything from website Discord OAuth setup, PLUS:
 3. Go to **Activities** section (new tab)
 4. Click **"Enable Activity"**
 5. Configure Activity settings:
-   - Set Activity URL: `https://yourdomain.com/discord-activity`
+   - Set Activity URL: `https://tiltcheck.me/discord-activity`
    - Upload required assets
    - Set supported platforms (Desktop, Mobile)
    - Configure Activity type (Game, Entertainment, etc.)
@@ -130,7 +127,7 @@ Beyond the packages listed in [WEBSITE_REQUIREMENTS.md](WEBSITE_REQUIREMENTS.md)
 Discord Activities require specific URL endpoints:
 
 ```
-https://yourdomain.com/
+https://tiltcheck.me/
 ├── /discord-activity          # Main Activity entry point
 ├── /discord-activity/lobby    # Game lobby within Activity
 ├── /discord-activity/game/:id # Game interface within Activity
@@ -161,7 +158,7 @@ DISCORD_ACTIVITY_ENABLED=true
 DISCORD_ACTIVITY_CLIENT_ID=your_discord_client_id
 DISCORD_ACTIVITY_CLIENT_SECRET=your_discord_client_secret
 DISCORD_ACTIVITY_PUBLIC_KEY=your_discord_public_key
-DISCORD_ACTIVITY_URL=https://yourdomain.com/discord-activity
+DISCORD_ACTIVITY_URL=https://tiltcheck.me/discord-activity
 
 # Activity Bot Settings (if different from main bot)
 DISCORD_ACTIVITY_BOT_TOKEN=your_activity_bot_token
@@ -184,7 +181,7 @@ Create `discord-activity-manifest.json`:
   "primary_sku_id": "your_sku_id",
   "slug": "degens-against-decency",
   "cover_image": "activity_cover.png",
-  "url": "https://yourdomain.com/discord-activity",
+  "url": "https://tiltcheck.me/discord-activity",
   "supported_platforms": ["desktop", "mobile"],
   "activity_orientation": "landscape",
   "max_participants": 8,

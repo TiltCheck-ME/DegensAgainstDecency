@@ -10,7 +10,8 @@ A comprehensive multiplayer party game platform featuring Discord authentication
 - 🔷 **[Vercel Deployment Guide](DEPLOYMENT_VERCEL.md)** - Step-by-step Vercel deployment with environment variables
 - 🚂 **[Railway Deployment Guide](DEPLOYMENT_RAILWAY.md)** - Deploy to Railway (recommended for WebSocket support)
 - 🎨 **[Render Deployment Guide](DEPLOYMENT_RENDER.md)** - Deploy to Render (great free tier)
-- 🎮 **[Discord Activity Requirements](DISCORD_ACTIVITY_REQUIREMENTS.md)** - Guide for Discord Activity implementation (future enhancement)
+- 🎮 **[Discord Activity Implementation](DISCORD_ACTIVITY_REQUIREMENTS.md)** - Guide for Discord Activity (Now implemented!)
+- ✅ **[Discord Activity Status](DISCORD_ACTIVITY_STATUS.md)** - Detailed summary of the Activity implementation
 
 **Other Documentation:**
 - 🤖 **[Vercel AI Gateway Guide](VERCEL_AI_GATEWAY.md)** - Multi-provider AI integration with automatic failover
@@ -32,6 +33,13 @@ A comprehensive multiplayer party game platform featuring Discord authentication
 - Slash commands for game management
 - Real-time game notifications via DM
 - Bridge between Discord and web interface
+
+### 🎮 Discord Activity Support (NEW)
+- Play directly within Discord voice channels
+- Native embedded experience (no browser switching)
+- Automatic authentication via Discord SDK
+- Rich presence and activity state synchronization
+- Cross-platform support (Desktop & Mobile Discord apps)
 
 ### 🎮 Multiple Game Types
 

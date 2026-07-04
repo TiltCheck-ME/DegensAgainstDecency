@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Degens Against Decency — Live Spectator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@discord/embedded-app-sdk@1.0.0/dist/umd/active.min.js"></script>
+</head>
+<body>
+    <div class="system-outer">
+        <div class="monitor-bezel">
+            <div class="bezel-brand">CARD-ROM 96</div>
+            <div class="crt-screen-container">
+                <div class="crt-screen theme-cyber" id="crtScreen">
+                    <div class="crt-scanlines"></div>
+                    <div class="crt-glare"></div>
+                    <div class="crt-flicker"></div>
+
+                    <div class="screen-view" id="biosScreen">
+                        <pre class="bios-text" id="biosText"></pre>
+                        <div class="bios-footer">CONNECTING TO CHANNEL FEED...</div>
+                    </div>
+
+                    <div class="screen-view hidden" id="waitingScreen">
+                        <div class="section-title">--- AWAITING SIGNAL ---</div>
+                        <div class="help-content" id="waitingMessage">
+                            <p>Listening for a Degens Against Decency match in this channel.</p>
+                            <p>Start a game in Discord with <span class="highlight">/create-game</span>.</p>
+                        </div>
+                    </div>
+
+                    <div class="screen-view hidden" id="errorScreen">
+                        <div class="section-title">--- SIGNAL LOST ---</div>
+                        <div class="help-content">
+                            <p id="errorMessage">Could not connect to the bot server.</p>
+                            <p>Check <span class="highlight">WS_URL</span> in config.js and that Fly is running.</p>
+                        </div>
+                    </div>
+
+                    <div class="screen-view hidden" id="lobbyScreen">
+                        <div class="section-title">--- GAME LOBBY ---</div>
+                        <div class="help-content">
+                            <p id="lobbyStatus">Waiting for players...</p>
+                            <p>Players in lobby:</p>
+                            <ul id="lobbyRoster"></ul>
+                        </div>
+                    </div>
+
+                    <div class="screen-view hidden" id="gameScreen">
+                        <div class="hud-bar">
+                            <div class="hud-item">ROUND: <span id="hudRound" class="hud-val">0</span></div>
+                            <div class="hud-item">CZAR: <span id="hudCzar" class="hud-val">—</span></div>
+                            <div class="hud-item">PHASE: <span id="hudPhase" class="hud-val">—</span></div>
+                            <div class="hud-item">PLAYERS: <span id="hudPlayers" class="hud-val">0</span></div>
+                            <div class="hud-item">IN: <span id="hudSubs" class="hud-val">0</span></div>
+                        </div>
+
+                        <div class="black-card-display" id="blackCardDisplay">
+                            <span class="card-tag">BLACK CARD</span>
+                            <p id="blackCardText">—</p>
+                        </div>
+
+                        <div class="card-ticker scrolling-active" id="cardTicker">
+                            <div class="ticker-track">🃏 🂡 🂱 🃁 🃑 🂮 🃎 🂾 🃞 🂻 🃋 🂫 🃛 🃓 🂳 🃣 🂣 🃏 🂡 🂱 🃁 🃑</div>
+                        </div>
+
+                        <div class="simulation-dashboard">
+                            <div class="terminal-log-container">
+                                <div class="terminal-header">
+                                    <span>LIVE FEED — DEGENS AGAINST DECENCY</span>
+                                    <span class="cursor-blink">■</span>
+                                </div>
+                                <div class="terminal-log" id="terminalLog"></div>
+                            </div>
+                            <div class="roster-panel">
+                                <div class="roster-header">SCOREBOARD</div>
+                                <div class="roster-list" id="rosterList"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="screen-view hidden" id="endScreen">
+                        <div class="section-title">--- MATCH OVER ---</div>
+                        <div class="help-content" id="endContent"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="monitor-controls">
+                <div class="control-dial-group">
+                    <div class="dial-container">
+                        <div class="dial-knob" style="transform: rotate(30deg);"></div>
+                        <div class="dial-label">BRIGHT</div>
+                    </div>
+                    <div class="dial-container">
+                        <div class="dial-knob" style="transform: rotate(-10deg);"></div>
+                        <div class="dial-label">CONTRAST</div>
+                    </div>
+                </div>
+                <div class="bezel-theme-toggles">
+                    <button class="theme-btn theme-green-btn" id="btnThemeGreen" title="Phosphor Green"></button>
+                    <button class="theme-btn theme-amber-btn" id="btnThemeAmber" title="Amber CRT"></button>
+                    <button class="theme-btn theme-cyber-btn active" id="btnThemeCyber" title="Cyberpunk Neon"></button>
+                    <button class="theme-btn theme-vga-btn" id="btnThemeVga" title="VGA Retro Color"></button>
+                </div>
+                <div class="power-button-container">
+                    <div class="power-led LED-on" id="powerLed"></div>
+                    <button class="power-btn" id="powerBtn" title="Toggle Power">POWER</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="site-footer" aria-hidden="true">
+        <span>Degens Against Decency</span>
+        <span class="footer-sep">·</span>
+        <a href="privacy.html">Privacy</a>
+        <span class="footer-sep">·</span>
+        <a href="terms.html">Terms</a>
+    </footer>
+
+    <script src="config.js"></script>
+    <script src="app.js" defer></script>
+</body>
+</html>

@@ -14,10 +14,17 @@ class ArenaManager {
     this.autoRefreshInterval = null;
     this.timerUpdateInterval = null;
     this.lastUpdateTime = Date.now();
+    this.isActivity = new URLSearchParams(window.location.search).get('mode') === 'activity' || sessionStorage.getItem('discord_activity_enabled') === 'true';
     this.init();
   }
 
   async init() {
+    if (this.isActivity) {
+      document.body.classList.add('discord-activity-mode');
+      const logoutBtn = document.getElementById('logout-btn');
+      if (logoutBtn) logoutBtn.style.display = 'none';
+      console.log('🎮 Running in Discord Activity mode');
+    }
     await this.loadUser();
     this.setupSocket();
     this.setupEventListeners();
