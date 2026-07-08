@@ -36,7 +36,9 @@ function buildChannelGamesMap(discordGames) {
     if (!game.channelId || game.status === 'finished') continue;
     const existing = map.get(game.channelId);
     const serialized = serializeGameForSpectator(game);
-    if (!existing || game.status === 'playing' || existing.gameState.status !== 'playing') {
+    const existingPlaying = existing?.gameState?.status === 'playing';
+
+    if (!existing || game.status === 'playing' || !existingPlaying) {
       map.set(game.channelId, { gameState: serialized });
     }
   }

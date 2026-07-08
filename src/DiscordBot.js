@@ -592,6 +592,7 @@ class DiscordBot {
     // Deal hands via DM (7 cards per player)
     game.playerHands = new Map();
     game.submissions = new Map();
+    game.scores = new Map(game.players.map((p) => [p.id, 0]));
     game.cardsPerHand = 7;
     game.maxRounds = 10;
     game.currentRound = 1;
@@ -1165,23 +1166,27 @@ class DiscordBot {
 
   async endDegensGame(game) {
     const channel = await this.client.channels.fetch(game.channelId);
-    
+
+    if (!game.scores) {
+      game.scores = new Map(game.players.map((p) => [p.id, 0]));
+    }
+
     // Calculate final scores
     const sortedScores = Array.from(game.scores.entries())
-      .sort(([,a], [,b]) => b - a);
-    
-    const winner = game.players.find(p => p.id === sortedScores[0][0]);
+      .sort(([, a], [, b]) => b - a);
+
+    const winner = game.players.find((p) => p.id === sortedScores[0]?.[0]);
     
     const embed = new EmbedBuilder()
       .setColor(0xFFD700)
       .setTitle('🏆 Game Complete!')
-      .setDescription(`Congratulations ${winner.username}!`)
+      .setDescription(winner ? `Congratulations ${winner.username}!` : 'Game over!')
       .addFields({
         name: '📊 Final Scores',
         value: sortedScores.map(([playerId, score], index) => {
           const player = game.players.find(p => p.id === playerId);
           const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '👤';
-          return `${medal} ${player.username}: ${score} points`;
+          return `${medal} ${player?.username || 'Unknown'}: ${score} points`;
         }).join('\n'),
         inline: false
       });
