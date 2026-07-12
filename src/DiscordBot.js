@@ -138,7 +138,7 @@ class DiscordBot {
       console.log(`🎮 Discord Bot ready! Logged in as ${this.client.user.tag}`);
       this.isReady = true;
       initOps(this.client, { botId: 'degens-against-decency' });
-      this.registerSlashCommands();
+      console.log('Slash commands are managed by: npm run deploy-commands');
     });
 
     this.client.on('guildCreate', (guild) => {
@@ -200,21 +200,6 @@ class DiscordBot {
       await this.client.login(process.env.DISCORD_BOT_TOKEN);
     } catch (error) {
       console.error('Failed to login Discord bot:', error);
-    }
-  }
-
-  async registerSlashCommands() {
-    if (process.env.DISCORD_GUILD_ID) {
-      console.log('DISCORD_GUILD_ID set — use node deploy-commands.js for slash commands');
-      return;
-    }
-    try {
-      console.log('Started refreshing application (/) commands.');
-      const commandsData = Array.from(this.commands.values()).map(cmd => cmd.data.toJSON());
-      await this.client.application.commands.set(commandsData);
-      console.log('Successfully reloaded application (/) commands.');
-    } catch (error) {
-      console.error('Error registering slash commands:', error);
     }
   }
 
