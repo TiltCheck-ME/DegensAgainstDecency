@@ -1,7 +1,7 @@
 # DAD Slash Command Cleanup Design
 
 **Date:** 2026-07-12  
-**Status:** Approved (conversational) — awaiting spec file review  
+**Status:** Approved  
 **Repo:** `TiltCheck-ME/DegensAgainstDecency`  
 **Goal:** Wipe stale/duplicate slash commands and re-register the same five commands **globally only** (cleanup, not a feature redesign).
 
