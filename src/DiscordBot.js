@@ -318,6 +318,7 @@ class DiscordBot {
         await interaction.reply({ content: '❌ Lobby is full.', ephemeral: true });
         return;
       }
+      await interaction.deferReply({ ephemeral: true });
       game.players.push({
         id: interaction.user.id,
         username: interaction.user.username,
@@ -327,7 +328,7 @@ class DiscordBot {
       });
       await this.refreshLobbyMessage(game);
       this.emitSpectator(game.channelId, 'lobby_update', game);
-      await interaction.reply({ content: `✅ Joined lobby \`${game.id}\`.`, ephemeral: true });
+      await interaction.editReply({ content: `✅ Joined lobby \`${game.id}\`.` });
       return;
     }
 
@@ -340,15 +341,15 @@ class DiscordBot {
         await interaction.reply({ content: '❌ Host cannot leave. Start the game or abandon by creating a new one.', ephemeral: true });
         return;
       }
-      const before = game.players.length;
-      game.players = game.players.filter((p) => p.id !== interaction.user.id);
-      if (game.players.length === before) {
+      if (!game.players.some((p) => p.id === interaction.user.id)) {
         await interaction.reply({ content: 'You are not in this lobby.', ephemeral: true });
         return;
       }
+      await interaction.deferReply({ ephemeral: true });
+      game.players = game.players.filter((p) => p.id !== interaction.user.id);
       await this.refreshLobbyMessage(game);
       this.emitSpectator(game.channelId, 'lobby_update', game);
-      await interaction.reply({ content: '👋 Left the lobby.', ephemeral: true });
+      await interaction.editReply({ content: '👋 Left the lobby.' });
       return;
     }
 
@@ -366,6 +367,7 @@ class DiscordBot {
         return;
       }
 
+      await interaction.deferReply();
       game.status = 'playing';
       game.currentRound = 1;
       await this.refreshLobbyMessage(game);
@@ -380,7 +382,7 @@ class DiscordBot {
         )
         .setTimestamp();
 
-      await interaction.reply({ embeds: [embed] });
+      await interaction.editReply({ embeds: [embed] });
       this.emitSpectator(game.channelId, 'game_start', game);
       postGameStarted({
         guildId: interaction.guildId || game.guildId,
@@ -650,6 +652,7 @@ class DiscordBot {
     // Start the game
     game.status = 'playing';
     game.currentRound = 1;
+    await this.refreshLobbyMessage(game);
 
     const embed = new EmbedBuilder()
       .setColor(0x00FF00)
