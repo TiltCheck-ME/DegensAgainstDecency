@@ -17,7 +17,7 @@ const {
   ButtonStyle,
 } = require('discord.js');
 const { serializeGameForSpectator, buildChannelGamesMap } = require('./spectator');
-const { initOps, postError, postGuildInstall, postGameStarted, postGameEnded } = require('./ops');
+const { initOps, postError, postGuildInstall, postGameStarted, postGameEnded, postSupport } = require('./ops');
 
 class DiscordBot {
   constructor(gameManager, io, options = {}) {
@@ -107,6 +107,32 @@ class DiscordBot {
       .setName('game-status')
       .setDescription('Check your current game status');
 
+    const supportCommand = new SlashCommandBuilder()
+      .setName('support')
+      .setDescription('Contact the DAD team — bug, suggestion, say hi, or tip jar')
+      .addStringOption((option) =>
+        option
+          .setName('type')
+          .setDescription('What kind of message?')
+          .setRequired(true)
+          .addChoices(
+            { name: '🐛 Bug report', value: 'bug_report' },
+            { name: '💡 Suggestion', value: 'suggestion' },
+            { name: '👋 Say hi to the dev', value: 'say_hi' },
+            { name: '☕ Donation / tip jar', value: 'donate' },
+          ),
+      )
+      .addStringOption((option) =>
+        option
+          .setName('details')
+          .setDescription('Details (required for bugs/suggestions)')
+          .setRequired(false),
+      );
+
+    const helpCommand = new SlashCommandBuilder()
+      .setName('help')
+      .setDescription('How to play Degens Against Decency in this channel');
+
     this.commands.set('create-game', {
       data: createGameCommand,
       execute: this.handleCreateGame.bind(this)
@@ -131,6 +157,9 @@ class DiscordBot {
       data: gameStatusCommand,
       execute: this.handleGameStatus.bind(this)
     });
+
+    this.commands.set('support', { data: supportCommand, execute: this.handleSupport.bind(this) });
+    this.commands.set('help', { data: helpCommand, execute: this.handleHelp.bind(this) });
   }
 
   setupEventHandlers() {
@@ -1735,6 +1764,93 @@ class DiscordBot {
     }
 
     this.emitSpectator(targetGame.channelId, 'lobby_update', targetGame);
+  }
+
+  async handleHelp(interaction) {
+    const embed = new EmbedBuilder()
+      .setColor(0x5865F2)
+      .setTitle('🃏 Degens Against Decency — Channel play')
+      .setDescription(
+        [
+          '**1.** `/create-game` — open a lobby (defaults to Degens)',
+          '**2.** Press **Join** on the lobby message',
+          '**3.** Host presses **Start** (need 3+ players)',
+          '**4.** Play in this channel — follow bot prompts',
+          '',
+          'Fallbacks: `/join-game`, `/list-games`, `/start-game`, `/game-status`',
+          'Need us? `/support`',
+          '',
+          '_Lobbies are in-memory — a bot restart clears open games._',
+        ].join('\n'),
+      )
+      .setFooter({ text: 'Activity /launch is parked — channel play is the MVP path' })
+      .setTimestamp();
+
+    await interaction.reply({ embeds: [embed], ephemeral: true });
+  }
+
+  async handleSupport(interaction) {
+    const type = interaction.options.getString('type', true);
+    const details = interaction.options.getString('details')?.trim() || '';
+    const kofiUrl = (process.env.KOFI_URL || 'https://ko-fi.com/jmenichole0').trim();
+
+    if (type === 'donate') {
+      await interaction.deferReply({ ephemeral: true });
+      postSupport({
+        type: 'donate',
+        user: interaction.user,
+        guild: interaction.guild,
+        details: 'Requested Ko-fi DM',
+      });
+      const donateEmbed = new EmbedBuilder()
+        .setColor(0xf1c40f)
+        .setTitle('☕ Tip jar')
+        .setDescription(`Optional tip — zero gameplay perks.\n\n→ [**Support on Ko-fi**](${kofiUrl})`)
+        .setTimestamp();
+      try {
+        await interaction.user.send({ embeds: [donateEmbed] });
+        await interaction.editReply({ content: '✅ Sent the Ko-fi link to your DMs!' });
+      } catch {
+        await interaction.editReply({
+          content: "⚠️ Couldn't DM you — privacy settings may block bot DMs. Here's the link:",
+          embeds: [donateEmbed],
+        });
+      }
+      return;
+    }
+
+    await interaction.deferReply({ ephemeral: true });
+
+    if (type === 'say_hi') {
+      const note = details || '(waved from the channel)';
+      postSupport({ type: 'say_hi', user: interaction.user, guild: interaction.guild, details: note });
+      await interaction.editReply({
+        content:
+          `👋 **Hey, ${interaction.user.username}!**\n` +
+          'Thanks for saying hi — the team sees you.\n\n' +
+          (details ? `_You said: ${details}_` : '_Keep dealing those cards._'),
+      });
+      return;
+    }
+
+    if (type === 'bug_report' || type === 'suggestion') {
+      if (!details) {
+        await interaction.editReply({
+          content: `Please include \`details\` for ${type === 'bug_report' ? 'bug reports' : 'suggestions'}.`,
+        });
+        return;
+      }
+      postSupport({ type, user: interaction.user, guild: interaction.guild, details });
+      await interaction.editReply({
+        content:
+          type === 'bug_report'
+            ? '🐛 Got it — bug report filed. Thanks for helping us fix things.'
+            : '💡 Suggestion received. Appreciate you!',
+      });
+      return;
+    }
+
+    await interaction.editReply({ content: 'Unknown support type.' });
   }
 
   async handleGameStatus(interaction) {
