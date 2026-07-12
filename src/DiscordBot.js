@@ -222,6 +222,56 @@ class DiscordBot {
     return buildChannelGamesMap(this.discordGames);
   }
 
+  lobbyCustomId(action, gameId) {
+    return `dad_${action}:${gameId}`;
+  }
+
+  parseLobbyCustomId(customId) {
+    const m = /^dad_(join|leave|start):(.+)$/.exec(customId || '');
+    if (!m) return null;
+    return { action: m[1], gameId: m[2] };
+  }
+
+  buildLobbyComponents(game, { disabled = false } = {}) {
+    const row = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setCustomId(this.lobbyCustomId('join', game.id))
+        .setLabel('Join')
+        .setStyle(ButtonStyle.Success)
+        .setDisabled(disabled || game.status !== 'waiting'),
+      new ButtonBuilder()
+        .setCustomId(this.lobbyCustomId('leave', game.id))
+        .setLabel('Leave')
+        .setStyle(ButtonStyle.Secondary)
+        .setDisabled(disabled || game.status !== 'waiting'),
+      new ButtonBuilder()
+        .setCustomId(this.lobbyCustomId('start', game.id))
+        .setLabel('Start')
+        .setStyle(ButtonStyle.Danger)
+        .setDisabled(disabled || game.status !== 'waiting'),
+    );
+    return [row];
+  }
+
+  buildLobbyEmbed(game) {
+    const roster = game.players.length
+      ? game.players.map((p, i) => `${i === 0 ? '👑' : '•'} ${p.username || p.tag || p.id}`).join('\n')
+      : '*No players yet*';
+
+    return new EmbedBuilder()
+      .setColor(0x5865F2)
+      .setTitle('🎮 Lobby open')
+      .setDescription(`${this.formatGameType(game.type)} — waiting for players`)
+      .addFields(
+        { name: 'Game ID', value: `\`${game.id}\``, inline: true },
+        { name: 'Players', value: `${game.players.length}/${game.maxPlayers}`, inline: true },
+        { name: 'Host', value: game.creator?.username || '?', inline: true },
+        { name: `Roster`, value: roster },
+      )
+      .setFooter({ text: 'Use Join / Leave / Start • ID commands still work as fallback' })
+      .setTimestamp();
+  }
+
   // Command Handlers
   async handleCreateGame(interaction) {
     const gameType = interaction.options.getString('type');
@@ -272,48 +322,13 @@ class DiscordBot {
 
     this.discordGames.set(gameId, discordGame);
 
-    const embed = new EmbedBuilder()
-      .setColor(0x5865F2)
-      .setTitle('🎮 Game Created!')
-      .setDescription(`${this.formatGameType(gameType)} game is ready to play!`)
-      .addFields(
-        { name: 'Game ID', value: gameId, inline: true },
-        { name: 'Players', value: `1/${maxPlayers}`, inline: true },
-        { name: 'Status', value: '⏳ Waiting for players', inline: true }
-      )
-      .setFooter({ text: 'Other players can join with /join-game' })
-      .setTimestamp();
+    const reply = await interaction.reply({
+      embeds: [this.buildLobbyEmbed(discordGame)],
+      components: this.buildLobbyComponents(discordGame),
+      fetchReply: true,
+    });
 
-    const activityRow = new ActionRowBuilder().addComponents(
-      new ButtonBuilder()
-        .setLabel('🖥️ Open Retro View')
-        .setStyle(ButtonStyle.Link)
-        .setURL(this.activityUrl(interaction.channelId)),
-    );
-
-    await interaction.reply({ embeds: [embed], components: [activityRow] });
-
-    // Send follow-up instructions
-    const instructionsEmbed = new EmbedBuilder()
-      .setColor(0x57F287)
-      .setTitle('🎯 How to Join')
-      .setDescription('Players can join this game using:')
-      .addFields(
-        { name: 'Command', value: `/join-game ${gameId}`, inline: false },
-        { name: 'Or React', value: 'React with 🎮 to join!', inline: false }
-      );
-
-    const followUp = await interaction.followUp({ embeds: [instructionsEmbed] });
-    
-    // Add reaction for easy joining
-    try {
-      await followUp.react('🎮');
-    } catch (error) {
-      console.error('Failed to add reaction:', error);
-    }
-
-    // Store message ID for reaction handling
-    discordGame.joinMessageId = followUp.id;
+    discordGame.lobbyMessageId = reply.id;
     this.emitSpectator(interaction.channelId, 'snapshot', discordGame);
   }
 
