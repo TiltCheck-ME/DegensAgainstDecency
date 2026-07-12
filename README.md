@@ -20,6 +20,16 @@ A comprehensive multiplayer party game platform featuring Discord authentication
 - 🚀 [Deployment with Integrations](DEPLOYMENT_INTEGRATIONS.md) - Deploy with optional integrations
 - 📱 [Discord Activities Analysis](DISCORD_ACTIVITIES.md) - Why Discord Activities aren't currently implemented
 
+## 📢 Channel MVP (current)
+
+The Discord bot now runs entirely in-channel — no web arena or Activity required to play.
+
+- **How to play**: Run `/create-game` in any channel (type defaults to Degens Against Decency). A lobby embed appears with **Join / Leave / Start** buttons — no need to type IDs or open a separate view.
+- **`/help`** — Posts a quick guide on how to play in the current channel.
+- **`/support`** — Send the dev team a bug report, suggestion, a friendly hello, or a tip-jar link. Reports route to an internal ops/support channel.
+- **Lobbies are in-memory** — they live only as long as the bot process. A Fly.io restart or redeploy clears any open lobbies; players will need to `/create-game` again.
+- **Discord Activity `/launch`** — The Activity's Primary Entry Point command is preserved during deploys (so Discord doesn't reject the registration), but the Activity itself is product-parked in favor of the simpler channel flow above.
+
 ## 🎯 Features
 
 ### 🔐 Discord OAuth Authentication
