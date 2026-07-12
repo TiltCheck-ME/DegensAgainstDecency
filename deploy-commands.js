@@ -82,11 +82,22 @@ const rest = new REST({ version: '10' }).setToken(token);
       }
     }
 
-    console.log(`Registering ${commands.length} commands globally...`);
-    await rest.put(Routes.applicationCommands(clientId), { body: commands });
+    // Activity apps have a Primary Entry Point (type 4) that must be kept on bulk PUT
+    // or Discord returns 50240.
+    const existing = await rest.get(Routes.applicationCommands(clientId));
+    const entryPoints = existing
+      .filter((cmd) => cmd.type === 4)
+      .map(({ id, application_id, version, guild_id, ...cmd }) => cmd);
+    if (entryPoints.length) {
+      console.log(`Preserving ${entryPoints.length} Activity Entry Point command(s).`);
+    }
+
+    const body = [...entryPoints, ...commands];
+    console.log(`Registering ${commands.length} slash commands globally (+${entryPoints.length} entry point)...`);
+    await rest.put(Routes.applicationCommands(clientId), { body });
     console.log('✅ Global commands registered:');
-    for (const cmd of commands) {
-      console.log(`   /${cmd.name}`);
+    for (const cmd of body) {
+      console.log(`   /${cmd.name}${cmd.type === 4 ? ' (entry point)' : ''}`);
     }
     console.log('Discord may take up to ~1 hour to propagate globally (usually minutes).');
     console.log('Restart Discord (Ctrl+R) if the client still shows old commands.');
