@@ -28,6 +28,7 @@
   },
   "scripts": {
     "start": "node server.js",
+    "deploy": "node deploy-commands.js",
     "deploy-commands": "node deploy-commands.js",
     "dev": "nodemon server.js",
     "build": "echo 'No build step required for this application'",

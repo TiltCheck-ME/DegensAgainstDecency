@@ -1,69 +1,95 @@
 /**
- * Register guild-scoped slash commands for Degens Against Decency.
- * Run: node deploy-commands.js
+ * Register slash commands globally for Degens Against Decency.
+ * Clears guild overrides first so commands never appear twice.
+ * Run: npm run deploy-commands
  */
 
 require('dotenv').config();
 const { REST, Routes, SlashCommandBuilder } = require('discord.js');
 
-const required = ['DISCORD_BOT_TOKEN', 'DISCORD_CLIENT_ID', 'DISCORD_GUILD_ID'];
-for (const key of required) {
-  if (!process.env[key]?.trim()) {
-    console.error(`Missing ${key} in .env`);
+function requireEnv(keys) {
+  const missing = keys.filter((k) => !process.env[k]?.trim());
+  if (missing.length) {
+    console.error(`Missing required env: ${missing.join(', ')}`);
     process.exit(1);
   }
 }
 
-const commands = [
-  new SlashCommandBuilder()
-    .setName('create-game')
-    .setDescription('Create a new Discord game')
-    .addStringOption((opt) =>
-      opt.setName('type').setDescription('Game type').setRequired(true).addChoices(
-        { name: 'Degens Against Decency', value: 'degens-against-decency' },
-        { name: '2 Truths and a Lie', value: '2-truths-and-a-lie' },
-        { name: 'Poker', value: 'poker' },
-      ),
-    )
-    .addIntegerOption((opt) =>
-      opt.setName('max-players').setDescription('Maximum players (3-7)').setMinValue(3).setMaxValue(7),
-    )
-    .addBooleanOption((opt) =>
-      opt.setName('private').setDescription('Make game private (default: false)'),
-    ),
-  new SlashCommandBuilder()
-    .setName('list-games')
-    .setDescription('List available public Discord games'),
-  new SlashCommandBuilder()
-    .setName('join-game')
-    .setDescription('Join a game by ID')
-    .addStringOption((opt) =>
-      opt.setName('game-id').setDescription('Game ID to join').setRequired(true),
-    ),
-  new SlashCommandBuilder()
-    .setName('start-game')
-    .setDescription('Start a game')
-    .addStringOption((opt) =>
-      opt.setName('game-id').setDescription('Game ID to start').setRequired(true),
-    ),
-  new SlashCommandBuilder()
-    .setName('game-status')
-    .setDescription('Check your current game status'),
-].map((cmd) => cmd.toJSON());
+function parseGuildIds() {
+  const multi = process.env.DISCORD_GUILD_IDS || '';
+  const single = process.env.DISCORD_GUILD_ID || '';
+  const raw = multi.trim() ? multi : single;
+  if (!raw.trim()) return [];
+  return raw.split(',').map((s) => s.trim()).filter(Boolean);
+}
 
-const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_BOT_TOKEN);
+function buildCommands() {
+  return [
+    new SlashCommandBuilder()
+      .setName('create-game')
+      .setDescription('Create a new Discord game')
+      .addStringOption((opt) =>
+        opt.setName('type').setDescription('Game type').setRequired(true).addChoices(
+          { name: 'Degens Against Decency', value: 'degens-against-decency' },
+          { name: '2 Truths and a Lie', value: '2-truths-and-a-lie' },
+          { name: 'Poker', value: 'poker' },
+        ),
+      )
+      .addIntegerOption((opt) =>
+        opt.setName('max-players').setDescription('Maximum players (3-7)').setMinValue(3).setMaxValue(7),
+      )
+      .addBooleanOption((opt) =>
+        opt.setName('private').setDescription('Make game private (default: false)'),
+      ),
+    new SlashCommandBuilder()
+      .setName('list-games')
+      .setDescription('List available public Discord games'),
+    new SlashCommandBuilder()
+      .setName('join-game')
+      .setDescription('Join a game by ID')
+      .addStringOption((opt) =>
+        opt.setName('game-id').setDescription('Game ID to join').setRequired(true),
+      ),
+    new SlashCommandBuilder()
+      .setName('start-game')
+      .setDescription('Start a game')
+      .addStringOption((opt) =>
+        opt.setName('game-id').setDescription('Game ID to start').setRequired(true),
+      ),
+    new SlashCommandBuilder()
+      .setName('game-status')
+      .setDescription('Check your current game status'),
+  ].map((cmd) => cmd.toJSON());
+}
+
+requireEnv(['DISCORD_BOT_TOKEN', 'DISCORD_CLIENT_ID']);
+
+const token = process.env.DISCORD_BOT_TOKEN.trim();
+const clientId = process.env.DISCORD_CLIENT_ID.trim();
+const guildIds = parseGuildIds();
+const commands = buildCommands();
+const rest = new REST({ version: '10' }).setToken(token);
 
 (async () => {
   try {
-    console.log('Registering guild slash commands...');
-    await rest.put(
-      Routes.applicationGuildCommands(
-        process.env.DISCORD_CLIENT_ID,
-        process.env.DISCORD_GUILD_ID,
-      ),
-      { body: commands },
-    );
-    console.log('✅ Commands registered. Start server with: npm start');
+    for (const guildId of guildIds) {
+      try {
+        console.log(`Clearing guild-specific commands on ${guildId}...`);
+        await rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: [] });
+        console.log(`✅ Guild ${guildId} cleared — will use global commands only.`);
+      } catch (err) {
+        console.warn(`⚠️  Guild ${guildId} skipped: ${err.message}`);
+      }
+    }
+
+    console.log(`Registering ${commands.length} commands globally...`);
+    await rest.put(Routes.applicationCommands(clientId), { body: commands });
+    console.log('✅ Global commands registered:');
+    for (const cmd of commands) {
+      console.log(`   /${cmd.name}`);
+    }
+    console.log('Discord may take up to ~1 hour to propagate globally (usually minutes).');
+    console.log('Restart Discord (Ctrl+R) if the client still shows old commands.');
   } catch (err) {
     console.error('❌ Failed:', err);
     process.exit(1);
