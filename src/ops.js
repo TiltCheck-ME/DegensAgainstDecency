@@ -117,6 +117,30 @@ function postAnalytics({ event, title, description, fields = [], color }) {
   }));
 }
 
+function postSupport({ type, user, guild, details }) {
+  const typeLabel = {
+    bug_report: '🐛 Bug report',
+    suggestion: '💡 Suggestion',
+    say_hi: '👋 Say hi',
+    donate: '☕ Donate',
+  }[type] || type;
+
+  postOps('support', () => ({
+    embeds: [
+      new EmbedBuilder()
+        .setColor(COLORS.support)
+        .setTitle(typeLabel)
+        .setDescription(details ? truncate(details, 1500) : '_No details_')
+        .addFields(
+          { name: 'User', value: `${user?.tag || '?'} (<@${user?.id}>)`, inline: true },
+          { name: 'Guild', value: guild ? `${guild.name}\n\`${guild.id}\`` : 'DM / unknown', inline: true },
+        )
+        .setFooter({ text: `${botId()} · /support` })
+        .setTimestamp(),
+    ],
+  }));
+}
+
 function postGuildInstall(guild) {
   postAnalytics({
     event: 'guild_install',
@@ -143,10 +167,26 @@ function postGameStarted({ guildId, channelId, gameType, players }) {
   });
 }
 
+function postGameEnded({ guildId, channelId, gameType, winnerTag, players }) {
+  postAnalytics({
+    event: 'game_ended',
+    title: '🏆 Game ended',
+    fields: [
+      { name: 'Type', value: gameType || '?', inline: true },
+      { name: 'Winner', value: winnerTag || '?', inline: true },
+      { name: 'Players', value: String(players ?? '?'), inline: true },
+      { name: 'Guild', value: `\`${guildId || '?'}\``, inline: true },
+      channelId ? { name: 'Channel', value: `<#${channelId}>`, inline: true } : null,
+    ],
+  });
+}
+
 module.exports = {
   initOps,
   postError,
   postGuildInstall,
   postGameStarted,
+  postGameEnded,
   postAnalytics,
+  postSupport,
 };
