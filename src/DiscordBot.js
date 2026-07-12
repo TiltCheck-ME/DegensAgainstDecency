@@ -17,6 +17,7 @@ const {
   ButtonStyle,
 } = require('discord.js');
 const { serializeGameForSpectator, buildChannelGamesMap } = require('./spectator');
+const { initOps, postError, postGuildInstall, postGameStarted } = require('./ops');
 
 class DiscordBot {
   constructor(gameManager, io, options = {}) {
@@ -136,7 +137,12 @@ class DiscordBot {
     this.client.once('ready', () => {
       console.log(`🎮 Discord Bot ready! Logged in as ${this.client.user.tag}`);
       this.isReady = true;
+      initOps(this.client, { botId: 'degens-against-decency' });
       this.registerSlashCommands();
+    });
+
+    this.client.on('guildCreate', (guild) => {
+      postGuildInstall(guild);
     });
 
     this.client.on('interactionCreate', async (interaction) => {
@@ -149,12 +155,17 @@ class DiscordBot {
         await command.execute(interaction);
       } catch (error) {
         console.error('Error executing command:', error);
+        postError({
+          context: `interaction:${interaction.commandName}`,
+          message: error.message || String(error),
+          stack: error.stack,
+        });
         const reply = { content: 'There was an error executing this command!', ephemeral: true };
         
         if (interaction.replied || interaction.deferred) {
-          await interaction.followUp(reply);
+          await interaction.followUp(reply).catch(() => {});
         } else {
-          await interaction.reply(reply);
+          await interaction.reply(reply).catch(() => {});
         }
       }
     });
@@ -176,6 +187,11 @@ class DiscordBot {
 
     this.client.on('error', (error) => {
       console.error('Discord bot error:', error);
+      postError({
+        context: 'discord_client',
+        message: error.message || String(error),
+        stack: error.stack,
+      });
     });
   }
 
@@ -508,6 +524,12 @@ class DiscordBot {
 
     await interaction.reply({ embeds: [embed] });
     this.emitSpectator(game.channelId, 'game_start', game);
+    postGameStarted({
+      guildId: interaction.guildId,
+      channelId: game.channelId,
+      gameType: game.type,
+      players: game.players.length,
+    });
 
     // Start game-specific logic
     switch (game.type) {
