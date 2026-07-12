@@ -17,7 +17,7 @@ const {
   ButtonStyle,
 } = require('discord.js');
 const { serializeGameForSpectator, buildChannelGamesMap } = require('./spectator');
-const { initOps, postError, postGuildInstall, postGameStarted } = require('./ops');
+const { initOps, postError, postGuildInstall, postGameStarted, postGameEnded, postSupport } = require('./ops');
 
 class DiscordBot {
   constructor(gameManager, io, options = {}) {
@@ -58,8 +58,8 @@ class DiscordBot {
       .setDescription('Create a new Discord game')
       .addStringOption(option =>
         option.setName('type')
-          .setDescription('Game type')
-          .setRequired(true)
+          .setDescription('Game type (defaults to Degens Against Decency)')
+          .setRequired(false)
           .addChoices(
             { name: 'Degens Against Decency', value: 'degens-against-decency' },
             { name: '2 Truths and a Lie', value: '2-truths-and-a-lie' },
@@ -107,6 +107,32 @@ class DiscordBot {
       .setName('game-status')
       .setDescription('Check your current game status');
 
+    const supportCommand = new SlashCommandBuilder()
+      .setName('support')
+      .setDescription('Contact the DAD team — bug, suggestion, say hi, or tip jar')
+      .addStringOption((option) =>
+        option
+          .setName('type')
+          .setDescription('What kind of message?')
+          .setRequired(true)
+          .addChoices(
+            { name: '🐛 Bug report', value: 'bug_report' },
+            { name: '💡 Suggestion', value: 'suggestion' },
+            { name: '👋 Say hi to the dev', value: 'say_hi' },
+            { name: '☕ Donation / tip jar', value: 'donate' },
+          ),
+      )
+      .addStringOption((option) =>
+        option
+          .setName('details')
+          .setDescription('Details (required for bugs/suggestions)')
+          .setRequired(false),
+      );
+
+    const helpCommand = new SlashCommandBuilder()
+      .setName('help')
+      .setDescription('How to play Degens Against Decency in this channel');
+
     this.commands.set('create-game', {
       data: createGameCommand,
       execute: this.handleCreateGame.bind(this)
@@ -131,6 +157,9 @@ class DiscordBot {
       data: gameStatusCommand,
       execute: this.handleGameStatus.bind(this)
     });
+
+    this.commands.set('support', { data: supportCommand, execute: this.handleSupport.bind(this) });
+    this.commands.set('help', { data: helpCommand, execute: this.handleHelp.bind(this) });
   }
 
   setupEventHandlers() {
@@ -146,22 +175,32 @@ class DiscordBot {
     });
 
     this.client.on('interactionCreate', async (interaction) => {
-      if (!interaction.isChatInputCommand()) return;
-
-      const command = this.commands.get(interaction.commandName);
-      if (!command) return;
-
       try {
+        if (interaction.isButton()) {
+          const parsed = this.parseLobbyCustomId(interaction.customId);
+          if (parsed) {
+            await this.handleLobbyButton(interaction, parsed);
+          }
+          return;
+        }
+
+        if (!interaction.isChatInputCommand()) return;
+
+        const command = this.commands.get(interaction.commandName);
+        if (!command) return;
+
         await command.execute(interaction);
       } catch (error) {
-        console.error('Error executing command:', error);
+        console.error('Error handling interaction:', error);
         postError({
-          context: `interaction:${interaction.commandName}`,
+          context: interaction.isChatInputCommand()
+            ? `interaction:${interaction.commandName}`
+            : `interaction:button:${interaction.customId || 'unknown'}`,
           message: error.message || String(error),
           stack: error.stack,
         });
         const reply = { content: 'There was an error executing this command!', ephemeral: true };
-        
+
         if (interaction.replied || interaction.deferred) {
           await interaction.followUp(reply).catch(() => {});
         } else {
@@ -222,9 +261,187 @@ class DiscordBot {
     return buildChannelGamesMap(this.discordGames);
   }
 
+  lobbyCustomId(action, gameId) {
+    return `dad_${action}:${gameId}`;
+  }
+
+  parseLobbyCustomId(customId) {
+    const m = /^dad_(join|leave|start):(.+)$/.exec(customId || '');
+    if (!m) return null;
+    return { action: m[1], gameId: m[2] };
+  }
+
+  buildLobbyComponents(game, { disabled = false } = {}) {
+    const row = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setCustomId(this.lobbyCustomId('join', game.id))
+        .setLabel('Join')
+        .setStyle(ButtonStyle.Success)
+        .setDisabled(disabled || game.status !== 'waiting'),
+      new ButtonBuilder()
+        .setCustomId(this.lobbyCustomId('leave', game.id))
+        .setLabel('Leave')
+        .setStyle(ButtonStyle.Secondary)
+        .setDisabled(disabled || game.status !== 'waiting'),
+      new ButtonBuilder()
+        .setCustomId(this.lobbyCustomId('start', game.id))
+        .setLabel('Start')
+        .setStyle(ButtonStyle.Danger)
+        .setDisabled(disabled || game.status !== 'waiting'),
+    );
+    return [row];
+  }
+
+  buildLobbyEmbed(game) {
+    const roster = game.players.length
+      ? game.players.map((p, i) => `${i === 0 ? '👑' : '•'} ${p.username || p.tag || p.id}`).join('\n')
+      : '*No players yet*';
+
+    return new EmbedBuilder()
+      .setColor(0x5865F2)
+      .setTitle('🎮 Lobby open')
+      .setDescription(`${this.formatGameType(game.type)} — waiting for players`)
+      .addFields(
+        { name: 'Game ID', value: `\`${game.id}\``, inline: true },
+        { name: 'Players', value: `${game.players.length}/${game.maxPlayers}`, inline: true },
+        { name: 'Host', value: game.creator?.username || '?', inline: true },
+        { name: `Roster`, value: roster },
+      )
+      .setFooter({ text: 'Use Join / Leave / Start • ID commands still work as fallback' })
+      .setTimestamp();
+  }
+
+  async refreshLobbyMessage(game) {
+    if (!game?.lobbyMessageId || !game.channelId) return;
+    try {
+      const channel = await this.client.channels.fetch(game.channelId);
+      const message = await channel.messages.fetch(game.lobbyMessageId);
+      const disabled = game.status !== 'waiting';
+      await message.edit({
+        embeds: [this.buildLobbyEmbed(game)],
+        components: this.buildLobbyComponents(game, { disabled }),
+      });
+    } catch (error) {
+      console.error('Failed to refresh lobby message:', error);
+    }
+  }
+
+  async handleLobbyButton(interaction, { action, gameId }) {
+    if (!this.discordGames || !this.discordGames.has(gameId)) {
+      await interaction.reply({ content: '❌ This lobby no longer exists (bot may have restarted). Create a new game with `/create-game`.', ephemeral: true });
+      return;
+    }
+
+    const game = this.discordGames.get(gameId);
+
+    if (action === 'join') {
+      if (game.status !== 'waiting') {
+        await interaction.reply({ content: '⚠️ This game already started.', ephemeral: true });
+        return;
+      }
+      if (game.players.some((p) => p.id === interaction.user.id)) {
+        await interaction.reply({ content: '✅ You are already in this lobby.', ephemeral: true });
+        return;
+      }
+      if (game.players.length >= game.maxPlayers) {
+        await interaction.reply({ content: '❌ Lobby is full.', ephemeral: true });
+        return;
+      }
+      await interaction.deferReply({ ephemeral: true });
+      game.players.push({
+        id: interaction.user.id,
+        username: interaction.user.username,
+        discriminator: interaction.user.discriminator || '0000',
+        avatar: interaction.user.avatar,
+        isDiscordBot: true,
+      });
+      await this.refreshLobbyMessage(game);
+      this.emitSpectator(game.channelId, 'lobby_update', game);
+      await interaction.editReply({ content: `✅ Joined lobby \`${game.id}\`.` });
+      return;
+    }
+
+    if (action === 'leave') {
+      if (game.status !== 'waiting') {
+        await interaction.reply({ content: '⚠️ Cannot leave after the game started.', ephemeral: true });
+        return;
+      }
+      if (game.creator.id === interaction.user.id) {
+        await interaction.reply({ content: '❌ Host cannot leave. Start the game or abandon by creating a new one.', ephemeral: true });
+        return;
+      }
+      if (!game.players.some((p) => p.id === interaction.user.id)) {
+        await interaction.reply({ content: 'You are not in this lobby.', ephemeral: true });
+        return;
+      }
+      await interaction.deferReply({ ephemeral: true });
+      game.players = game.players.filter((p) => p.id !== interaction.user.id);
+      await this.refreshLobbyMessage(game);
+      this.emitSpectator(game.channelId, 'lobby_update', game);
+      await interaction.editReply({ content: '👋 Left the lobby.' });
+      return;
+    }
+
+    if (action === 'start') {
+      if (game.creator.id !== interaction.user.id) {
+        await interaction.reply({ content: '❌ Only the host can start the game.', ephemeral: true });
+        return;
+      }
+      if (game.status !== 'waiting') {
+        await interaction.reply({ content: '⚠️ Game already started.', ephemeral: true });
+        return;
+      }
+      if (game.players.length < 3) {
+        await interaction.reply({ content: '❌ Need at least 3 players to start.', ephemeral: true });
+        return;
+      }
+
+      await interaction.deferReply();
+      game.status = 'playing';
+      game.currentRound = 1;
+      await this.refreshLobbyMessage(game);
+
+      const embed = new EmbedBuilder()
+        .setColor(0x00FF00)
+        .setTitle('🚀 Game Started!')
+        .setDescription(`${this.formatGameType(game.type)} is now beginning!`)
+        .addFields(
+          { name: 'Players', value: game.players.map((p) => `• ${p.username}`).join('\n'), inline: false },
+          { name: 'Round', value: '1', inline: true },
+        )
+        .setTimestamp();
+
+      await interaction.editReply({ embeds: [embed] });
+      this.emitSpectator(game.channelId, 'game_start', game);
+      postGameStarted({
+        guildId: interaction.guildId || game.guildId,
+        channelId: game.channelId,
+        gameType: game.type,
+        players: game.players.length,
+      });
+
+      if (game.type === 'degens-against-decency') {
+        await this.startDegensDiscordGame(game);
+      } else {
+        // MVP: only Degens should reach here via default create; keep slash /start-game for other types
+        await interaction.followUp({ content: 'Use `/start-game` for non-Degens types (deferred in MVP).', ephemeral: true }).catch(() => {});
+      }
+      return;
+    }
+
+    await interaction.reply({ content: 'Unknown lobby action.', ephemeral: true });
+  }
+
   // Command Handlers
   async handleCreateGame(interaction) {
-    const gameType = interaction.options.getString('type');
+    const gameType = interaction.options.getString('type') || 'degens-against-decency';
+    if (gameType === 'poker' || gameType === '2-truths-and-a-lie') {
+      await interaction.reply({
+        content: '⏳ Poker and 2 Truths are deferred for the channel MVP. Create a Degens Against Decency lobby (omit type or pick Degens).',
+        ephemeral: true,
+      });
+      return;
+    }
     const maxPlayers = interaction.options.getInteger('max-players') || 7;
     const isPrivate = interaction.options.getBoolean('private') || false;
 
@@ -272,48 +489,13 @@ class DiscordBot {
 
     this.discordGames.set(gameId, discordGame);
 
-    const embed = new EmbedBuilder()
-      .setColor(0x5865F2)
-      .setTitle('🎮 Game Created!')
-      .setDescription(`${this.formatGameType(gameType)} game is ready to play!`)
-      .addFields(
-        { name: 'Game ID', value: gameId, inline: true },
-        { name: 'Players', value: `1/${maxPlayers}`, inline: true },
-        { name: 'Status', value: '⏳ Waiting for players', inline: true }
-      )
-      .setFooter({ text: 'Other players can join with /join-game' })
-      .setTimestamp();
+    const reply = await interaction.reply({
+      embeds: [this.buildLobbyEmbed(discordGame)],
+      components: this.buildLobbyComponents(discordGame),
+      fetchReply: true,
+    });
 
-    const activityRow = new ActionRowBuilder().addComponents(
-      new ButtonBuilder()
-        .setLabel('🖥️ Open Retro View')
-        .setStyle(ButtonStyle.Link)
-        .setURL(this.activityUrl(interaction.channelId)),
-    );
-
-    await interaction.reply({ embeds: [embed], components: [activityRow] });
-
-    // Send follow-up instructions
-    const instructionsEmbed = new EmbedBuilder()
-      .setColor(0x57F287)
-      .setTitle('🎯 How to Join')
-      .setDescription('Players can join this game using:')
-      .addFields(
-        { name: 'Command', value: `/join-game ${gameId}`, inline: false },
-        { name: 'Or React', value: 'React with 🎮 to join!', inline: false }
-      );
-
-    const followUp = await interaction.followUp({ embeds: [instructionsEmbed] });
-    
-    // Add reaction for easy joining
-    try {
-      await followUp.react('🎮');
-    } catch (error) {
-      console.error('Failed to add reaction:', error);
-    }
-
-    // Store message ID for reaction handling
-    discordGame.joinMessageId = followUp.id;
+    discordGame.lobbyMessageId = reply.id;
     this.emitSpectator(interaction.channelId, 'snapshot', discordGame);
   }
 
@@ -414,25 +596,29 @@ class DiscordBot {
 
     await interaction.reply({ embeds: [embed] });
 
-    // Update the original game message if possible
-    try {
-      const channel = await this.client.channels.fetch(game.channelId);
-      if (channel && game.joinMessageId) {
-        const message = await channel.messages.fetch(game.joinMessageId);
-        const updatedEmbed = new EmbedBuilder()
-          .setColor(0x57F287)
-          .setTitle('🎯 How to Join')
-          .setDescription('Players can join this game using:')
-          .addFields(
-            { name: 'Command', value: `/join-game ${gameId}`, inline: false },
-            { name: 'Current Players', value: `${game.players.length}/${game.maxPlayers}`, inline: false },
-            { name: 'Players', value: game.players.map(p => `• ${p.username}`).join('\n'), inline: false }
-          );
+    // Update the lobby message (preferred) or fall back to the legacy join message
+    if (game.lobbyMessageId) {
+      await this.refreshLobbyMessage(game);
+    } else {
+      try {
+        const channel = await this.client.channels.fetch(game.channelId);
+        if (channel && game.joinMessageId) {
+          const message = await channel.messages.fetch(game.joinMessageId);
+          const updatedEmbed = new EmbedBuilder()
+            .setColor(0x57F287)
+            .setTitle('🎯 How to Join')
+            .setDescription('Players can join this game using:')
+            .addFields(
+              { name: 'Command', value: `/join-game ${gameId}`, inline: false },
+              { name: 'Current Players', value: `${game.players.length}/${game.maxPlayers}`, inline: false },
+              { name: 'Players', value: game.players.map(p => `• ${p.username}`).join('\n'), inline: false }
+            );
 
-        await message.edit({ embeds: [updatedEmbed] });
+          await message.edit({ embeds: [updatedEmbed] });
+        }
+      } catch (error) {
+        console.error('Failed to update join message:', error);
       }
-    } catch (error) {
-      console.error('Failed to update join message:', error);
     }
 
     // Check if game is ready to start
@@ -495,6 +681,7 @@ class DiscordBot {
     // Start the game
     game.status = 'playing';
     game.currentRound = 1;
+    await this.refreshLobbyMessage(game);
 
     const embed = new EmbedBuilder()
       .setColor(0x00FF00)
@@ -1202,6 +1389,13 @@ class DiscordBot {
     
     game.status = 'finished';
     this.emitSpectator(game.channelId, 'game_end', game);
+    postGameEnded({
+      guildId: game.guildId,
+      channelId: game.channelId,
+      gameType: game.type,
+      winnerTag: winner?.username || '?',
+      players: game.players.length,
+    });
     setTimeout(() => {
       this.discordGames.delete(game.id);
     }, 300000);
@@ -1570,6 +1764,93 @@ class DiscordBot {
     }
 
     this.emitSpectator(targetGame.channelId, 'lobby_update', targetGame);
+  }
+
+  async handleHelp(interaction) {
+    const embed = new EmbedBuilder()
+      .setColor(0x5865F2)
+      .setTitle('🃏 Degens Against Decency — Channel play')
+      .setDescription(
+        [
+          '**1.** `/create-game` — open a lobby (defaults to Degens)',
+          '**2.** Press **Join** on the lobby message',
+          '**3.** Host presses **Start** (need 3+ players)',
+          '**4.** Play in this channel — follow bot prompts',
+          '',
+          'Fallbacks: `/join-game`, `/list-games`, `/start-game`, `/game-status`',
+          'Need us? `/support`',
+          '',
+          '_Lobbies are in-memory — a bot restart clears open games._',
+        ].join('\n'),
+      )
+      .setFooter({ text: 'Activity /launch is parked — channel play is the MVP path' })
+      .setTimestamp();
+
+    await interaction.reply({ embeds: [embed], ephemeral: true });
+  }
+
+  async handleSupport(interaction) {
+    const type = interaction.options.getString('type', true);
+    const details = interaction.options.getString('details')?.trim() || '';
+    const kofiUrl = (process.env.KOFI_URL || 'https://ko-fi.com/jmenichole0').trim();
+
+    if (type === 'donate') {
+      await interaction.deferReply({ ephemeral: true });
+      postSupport({
+        type: 'donate',
+        user: interaction.user,
+        guild: interaction.guild,
+        details: 'Requested Ko-fi DM',
+      });
+      const donateEmbed = new EmbedBuilder()
+        .setColor(0xf1c40f)
+        .setTitle('☕ Tip jar')
+        .setDescription(`Optional tip — zero gameplay perks.\n\n→ [**Support on Ko-fi**](${kofiUrl})`)
+        .setTimestamp();
+      try {
+        await interaction.user.send({ embeds: [donateEmbed] });
+        await interaction.editReply({ content: '✅ Sent the Ko-fi link to your DMs!' });
+      } catch {
+        await interaction.editReply({
+          content: "⚠️ Couldn't DM you — privacy settings may block bot DMs. Here's the link:",
+          embeds: [donateEmbed],
+        });
+      }
+      return;
+    }
+
+    await interaction.deferReply({ ephemeral: true });
+
+    if (type === 'say_hi') {
+      const note = details || '(waved from the channel)';
+      postSupport({ type: 'say_hi', user: interaction.user, guild: interaction.guild, details: note });
+      await interaction.editReply({
+        content:
+          `👋 **Hey, ${interaction.user.username}!**\n` +
+          'Thanks for saying hi — the team sees you.\n\n' +
+          (details ? `_You said: ${details}_` : '_Keep dealing those cards._'),
+      });
+      return;
+    }
+
+    if (type === 'bug_report' || type === 'suggestion') {
+      if (!details) {
+        await interaction.editReply({
+          content: `Please include \`details\` for ${type === 'bug_report' ? 'bug reports' : 'suggestions'}.`,
+        });
+        return;
+      }
+      postSupport({ type, user: interaction.user, guild: interaction.guild, details });
+      await interaction.editReply({
+        content:
+          type === 'bug_report'
+            ? '🐛 Got it — bug report filed. Thanks for helping us fix things.'
+            : '💡 Suggestion received. Appreciate you!',
+      });
+      return;
+    }
+
+    await interaction.editReply({ content: 'Unknown support type.' });
   }
 
   async handleGameStatus(interaction) {

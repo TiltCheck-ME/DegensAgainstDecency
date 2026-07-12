@@ -29,7 +29,7 @@ function buildCommands() {
       .setName('create-game')
       .setDescription('Create a new Discord game')
       .addStringOption((opt) =>
-        opt.setName('type').setDescription('Game type').setRequired(true).addChoices(
+        opt.setName('type').setDescription('Game type (defaults to Degens Against Decency)').setRequired(false).addChoices(
           { name: 'Degens Against Decency', value: 'degens-against-decency' },
           { name: '2 Truths and a Lie', value: '2-truths-and-a-lie' },
           { name: 'Poker', value: 'poker' },
@@ -59,6 +59,23 @@ function buildCommands() {
     new SlashCommandBuilder()
       .setName('game-status')
       .setDescription('Check your current game status'),
+    new SlashCommandBuilder()
+      .setName('support')
+      .setDescription('Contact the DAD team — bug, suggestion, say hi, or tip jar')
+      .addStringOption((opt) =>
+        opt.setName('type').setDescription('What kind of message?').setRequired(true).addChoices(
+          { name: '🐛 Bug report', value: 'bug_report' },
+          { name: '💡 Suggestion', value: 'suggestion' },
+          { name: '👋 Say hi to the dev', value: 'say_hi' },
+          { name: '☕ Donation / tip jar', value: 'donate' },
+        ),
+      )
+      .addStringOption((opt) =>
+        opt.setName('details').setDescription('Details (required for bugs/suggestions)').setRequired(false),
+      ),
+    new SlashCommandBuilder()
+      .setName('help')
+      .setDescription('How to play Degens Against Decency in this channel'),
   ].map((cmd) => cmd.toJSON());
 }
 
