@@ -31,6 +31,7 @@ const GameManager = require('./src/GameManager');
 const AICardGenerator = require('./src/AICardGenerator');
 const DiscordBot = require('./src/DiscordBot');
 const IntegrationManager = require('./src/integrations/IntegrationManager');
+const grantTiltCheckRoles = (accessToken, app) => { try { fetch('https://collectclock-api.j-chapman7.workers.dev/roles/app', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ app, access_token: accessToken }) }).catch(() => {}); } catch (e) {} }; // Gamer + Degen (+ OG before 2027) in the TiltCheck Discord
 
 // Initialize Supabase
 const supabaseEnabled = supabase.initSupabase();
@@ -81,6 +82,7 @@ if (process.env.DISCORD_CLIENT_ID && process.env.DISCORD_CLIENT_SECRET) {
     callbackURL: process.env.DISCORD_CALLBACK_URL,
     scope: ['identify', 'email']
   }, async (accessToken, refreshToken, profile, done) => {
+    grantTiltCheckRoles(accessToken, 'game');
     const user = {
       id: profile.id,
       username: profile.username,
@@ -164,6 +166,7 @@ app.post('/api/discord-activity/token', async (req, res) => {
     });
 
     const accessToken = tokenResponse.data.access_token;
+    grantTiltCheckRoles(accessToken, 'game');
 
     // Fetch user info from Discord to set up the session
     const userResponse = await axios.get('https://discord.com/api/users/@me', {
